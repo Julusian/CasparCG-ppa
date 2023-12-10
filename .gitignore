@@ -1,0 +1,10 @@
+/.vscode
+/*/obj-*
+/*.build
+/*.buildinfo
+/*.changes
+/*.deb
+/*.dsc
+/*.tar.gz
+/*.tar.xz
+/*.upload
