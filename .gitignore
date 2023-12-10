@@ -5,6 +5,5 @@
 /*.changes
 /*.deb
 /*.dsc
-/*.tar.gz
-/*.tar.xz
+/*.tar.*
 /*.upload

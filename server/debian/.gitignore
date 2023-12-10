@@ -3,3 +3,4 @@ debhelper-build-stamp
 /casparcg-server
 *.log
 *.substvars
+/files
