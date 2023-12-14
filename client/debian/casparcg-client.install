@@ -1,0 +1,2 @@
+resources/linux/casparcg-client.desktop /usr/share/applications/
+src/Widgets/Images/CasparCG.png /usr/share/icons/casparcg-client/

@@ -1,0 +1,28 @@
+Source: casparcg-client
+Maintainer: Julian Waller <git@julusian.co.uk>
+Section: video
+Priority: optional
+Standards-Version: 4.6.0.1
+Build-Depends: cmake,
+               debhelper-compat (= 13),
+               libboost-thread-dev,
+               qt6-base-dev,
+               libqt6websockets6-dev,
+               libqt6gui6,
+               libqt6widgets6,
+               libqt6core5compat6-dev,
+               libgl1-mesa-dev,
+               libvlc-dev,
+               libvlccore-dev,
+               pkg-config
+Homepage: https://github.com/CasparCG/server/
+Vcs-Git: https://github.com/Julusian/CasparCG-ppa.git
+Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
+
+Package: casparcg-client
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Architecture: any
+Description: general purpose client for casparcg-server
+ Play out professional graphics, audio and video to multiple outputs as a
+ layerbased real-time compositor.
