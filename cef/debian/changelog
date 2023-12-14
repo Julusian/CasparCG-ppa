@@ -1,18 +1,5 @@
-casparcg-server-cef (117.2.5~gda4c36a+jammy-1.2) jammy; urgency=medium
-
-  * Add missing build dependencies
-
- -- Julian Waller <me@julusian.co.uk>  Mon, 11 Dec 2023 22:29:09 +0000
-
-casparcg-server-cef (117.2.5~gda4c36a+jammy-1.1) jammy; urgency=medium
-
-  * Add missing build depenendency
-
- -- Julian Waller <me@julusian.co.uk>  Sun, 10 Dec 2023 23:40:30 +0000
-
-casparcg-server-cef (117.2.5~gda4c36a+jammy-1) jammy; urgency=medium
-
+casparcg-cef-117 (117.2.5~gda4c36a+ubuntu1) jammy; urgency=medium
 
   * First upload
 
- -- Julian Waller <me@julusian.co.uk>  Sun, 10 Dec 2023 21:23:00 +0000
+ -- Julian Waller <me@julusian.co.uk>  Thu, 14 Dec 2023 21:40:00 +0000

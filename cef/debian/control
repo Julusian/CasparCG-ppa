@@ -1,4 +1,4 @@
-Source: casparcg-server-cef
+Source: casparcg-cef-117
 Maintainer: Julian Waller <git@julusian.co.uk>
 Section: libs
 Priority: optional
@@ -30,19 +30,21 @@ Build-Depends: cmake,
                libxkbcommon0,
                libxrandr2
 Homepage: https://github.com/CasparCG/server/
-Vcs-Git: https://github.com/Julusian/CasparCG-server-ppa.git
-Vcs-Browser: https://github.com/Julusian/CasparCG-server-ppa/
+Vcs-Git: https://github.com/Julusian/CasparCG-ppa.git
+Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
 
-Package: casparcg-server-cef
+Package: casparcg-cef-117
 Section: libs
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Architecture: amd64
 Description: chromiumembedded for casparcg-server
+  This is its extended description.
 
-Package: casparcg-server-cef-dev
+Package: casparcg-cef-117-dev
 Section: libdevel
 Pre-Depends: ${misc:Pre-Depends}
-Depends: casparcg-server-cef (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
+Depends: casparcg-cef-117 (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
 Architecture: amd64
 Description: chromiumembedded for casparcg-server
+  This is its extended description.
