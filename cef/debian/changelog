@@ -1,3 +1,9 @@
+casparcg-cef-117 (117.2.5~gda4c36a+ubuntu2) jammy; urgency=medium
+
+  * Fix: Missing contents of binary package
+
+ -- Julian Waller <me@julusian.co.uk>  Thu, 14 Dec 2023 23:03:09 +0000
+
 casparcg-cef-117 (117.2.5~gda4c36a+ubuntu1) jammy; urgency=medium
 
   * First upload
