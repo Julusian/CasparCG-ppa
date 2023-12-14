@@ -11,3 +11,9 @@
 
 cef/*
 !cef/debian
+
+server-*/*
+!server-*/debian
+
+client/*
+!client/debian
