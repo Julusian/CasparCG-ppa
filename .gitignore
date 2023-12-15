@@ -9,8 +9,8 @@
 /*.tar.*
 /*.upload
 
-cef/*
-!cef/debian
+cef-*/*
+!cef-*/debian
 
 server-*/*
 !server-*/debian
