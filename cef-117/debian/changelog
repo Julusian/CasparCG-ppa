@@ -1,3 +1,9 @@
+casparcg-cef-117 (117.2.5~gda4c36a-jammy1) jammy; urgency=medium
+
+  * Fix: Rework version numbering to support multiple series
+
+ -- Julian Waller <me@julusian.co.uk>  Fri, 15 Dec 2023 01:27:00 +0000
+
 casparcg-cef-117 (117.2.5~gda4c36a+ubuntu2) jammy; urgency=medium
 
   * Fix: Missing contents of binary package

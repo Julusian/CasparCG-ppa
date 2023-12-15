@@ -1,2 +1,3 @@
-obj-*/staging/bin/casparcg /usr/bin/casparcg-server-2.4
-obj-*/staging/casparcg.config /usr/share/casparcg-server-2.4
+#!/usr/bin/dh-exec
+[amd64] obj-x86_64-linux-gnu/staging/bin/casparcg => /usr/bin/casparcg-server-2.4
+src/shell/casparcg.config => /usr/share/casparcg-server-2.4/casparcg.config.example

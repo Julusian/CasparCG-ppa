@@ -6,9 +6,9 @@ override_dh_auto_configure:
 	dh_auto_configure -- -DUSE_SYSTEM_CEF=ON -DUSE_SYSTEM_BOOST=ON -DUSE_SYSTEM_FFMPEG=ON
 
 # Generate and install manual page
-debian/casparcg.1: debian/casparcg.txt2man
+debian/casparcg-server-2.4.1: debian/casparcg.txt2man
 	txt2man -t CASPARCG -d 2018-12-14 -s 1 debian/casparcg.txt2man > $@
 
-override_dh_installman: debian/casparcg.1
+override_dh_installman: debian/casparcg-server-2.4.1
 	dh_installman
-	$(RM) debian/casparcg.1
+	$(RM) debian/casparcg-server-2.4.1
