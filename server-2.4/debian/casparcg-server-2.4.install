@@ -1,0 +1,2 @@
+obj-*/staging/bin/casparcg /usr/bin/casparcg-server-2.4
+obj-*/staging/casparcg.config /usr/share/casparcg-server-2.4

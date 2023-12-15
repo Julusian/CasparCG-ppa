@@ -1,7 +1,7 @@
 NAME
-  casparcg - layered real-time video compositor to multiple outputs
+  casparcg-server-2.4 - layered real-time video compositor to multiple outputs
 SYNOPSIS
-  casparcg [path-to-config]
+  casparcg-server-2.4 [path-to-config]
 DESCRIPTION
   Play out professional graphics, audio and video to multiple outputs as a
   layerbased real-time compositor.

@@ -1,6 +1,5 @@
-casparcg-server (2.4.0~beta1+jammy-1.1) jammy; urgency=medium
-
+casparcg-server-2.4 (2.4.0~beta1-ubuntu1) jammy; urgency=medium
 
   * First upload
 
- -- Julian Waller <me@julusian.co.uk>  Sun, 10 Dec 2023 18:31:16 +0000
+ -- Julian Waller <me@julusian.co.uk>  Thu, 14 Dec 2023 23:18:00 +0000
