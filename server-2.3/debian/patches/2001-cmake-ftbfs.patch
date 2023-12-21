@@ -26,7 +26,7 @@ Index: server-2.3/src/CMakeModules/Bootstrap_Linux.cmake
  
  if (ENABLE_HTML)
  	SET(CEF_ROOT_DIR "/opt/cef" CACHE STRING "Path to CEF")
-@@ -74,6 +75,9 @@ ADD_COMPILE_OPTIONS (-msse3)
+@@ -78,6 +79,9 @@ ADD_COMPILE_OPTIONS (-msse3)
  ADD_COMPILE_OPTIONS (-mssse3)
  ADD_COMPILE_OPTIONS (-msse4.1)
  ADD_COMPILE_OPTIONS (-fnon-call-exceptions) # Allow signal handler to throw exception

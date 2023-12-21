@@ -63,6 +63,9 @@ There is a folder per 'branch' of casparcg (2.3, 2.4 etc). This is so that they 
 
 There is also the 'server-latest' which is a minimal package to allow for installing the 'latest'. It points to one of the other packages, and should be published when a new release branch is released.
 
+Note: server-2.3 is not nice to package, as its cef requires some of the cef assets to be located next to the binary.  
+(cef builds prior to https://bitbucket.org/chromiumembedded/cef/commits/602c163)
+
 ### Client
 
 The client can be published from here too, using a single branch for now.

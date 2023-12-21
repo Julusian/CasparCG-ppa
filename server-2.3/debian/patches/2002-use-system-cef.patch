@@ -1,3 +1,31 @@
+From 4e254d04f9180f8e3c32e94169be790cc9af2fdc Mon Sep 17 00:00:00 2001
+From: Julian Waller <git@julusian.co.uk>
+Date: Thu, 21 Dec 2023 21:20:56 +0000
+Subject: [PATCH] Build against casparcg-cef-71 for HTML support
+Forwarded: no
+
+---
+Index: server-2.3/src/ubuntu-launch.sh
+===================================================================
+--- /dev/null
++++ server-2.3/src/ubuntu-launch.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++
++/usr/lib/casparcg-server-2.3/casparcg-server-2.3 $@
+Index: server-2.3/src/modules/html/html.cpp
+===================================================================
+--- server-2.3.orig/src/modules/html/html.cpp
++++ server-2.3/src/modules/html/html.cpp
+@@ -254,6 +254,8 @@ void init(core::module_dependencies depe
+         settings.no_sandbox                   = true;
+         settings.remote_debugging_port        = env::properties().get(L"configuration.html.remote-debugging-port", 0);
+         settings.windowless_rendering_enabled = true;
++        CefString(&settings.resources_dir_path).FromString("/usr/lib/casparcg-cef-71");
++        CefString(&settings.locales_dir_path).FromString("/usr/lib/casparcg-cef-71/locales");
+         CefInitialize(main_args, settings, CefRefPtr<CefApp>(new renderer_application(enable_gpu)), nullptr);
+     });
+     g_cef_executor->begin_invoke([&] { CefRunMessageLoop(); });
 Index: server-2.3/src/CMakeModules/Bootstrap_Linux.cmake
 ===================================================================
 --- server-2.3.orig/src/CMakeModules/Bootstrap_Linux.cmake
@@ -32,11 +60,10 @@ Index: server-2.3/src/shell/CMakeLists.txt
 ===================================================================
 --- server-2.3.orig/src/shell/CMakeLists.txt
 +++ server-2.3/src/shell/CMakeLists.txt
-@@ -123,20 +123,20 @@ else ()
- 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/shell/run.sh ${CMAKE_BINARY_DIR}/staging/run.sh)
+@@ -124,19 +124,19 @@ else ()
  
  # Disabled as HTML module is disabled
--  if (ENABLE_HTML )
+   if (ENABLE_HTML)
 -	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CEF_RESOURCE_PATH}/locales ${CMAKE_BINARY_DIR}/staging/bin/locales)
 -	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef.pak ${CMAKE_BINARY_DIR}/staging/bin/cef.pak)
 -	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef_100_percent.pak ${CMAKE_BINARY_DIR}/staging/bin/cef_100_percent.pak)
@@ -51,21 +78,33 @@ Index: server-2.3/src/shell/CMakeLists.txt
 -	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libcef.so ${CMAKE_BINARY_DIR}/staging/lib/libcef.so)
 -	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libEGL.so ${CMAKE_BINARY_DIR}/staging/lib/libEGL.so)
 -	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libGLESv2.so ${CMAKE_BINARY_DIR}/staging/lib/libGLESv2.so)
--  endif ()
-+#  if (ENABLE_HTML )
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CEF_RESOURCE_PATH}/locales ${CMAKE_BINARY_DIR}/staging/bin/locales)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef.pak ${CMAKE_BINARY_DIR}/staging/bin/cef.pak)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef_100_percent.pak ${CMAKE_BINARY_DIR}/staging/bin/cef_100_percent.pak)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef_200_percent.pak ${CMAKE_BINARY_DIR}/staging/bin/cef_200_percent.pak)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef_extensions.pak ${CMAKE_BINARY_DIR}/staging/bin/cef_extensions.pak)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/devtools_resources.pak ${CMAKE_BINARY_DIR}/staging/bin/devtools_resources.pak)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/icudtl.dat ${CMAKE_BINARY_DIR}/staging/bin/icudtl.dat)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CEF_BIN_PATH}/swiftshader ${CMAKE_BINARY_DIR}/staging/bin/swiftshader)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/natives_blob.bin ${CMAKE_BINARY_DIR}/staging/bin/natives_blob.bin)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/snapshot_blob.bin ${CMAKE_BINARY_DIR}/staging/bin/snapshot_blob.bin)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/v8_context_snapshot.bin ${CMAKE_BINARY_DIR}/staging/bin/v8_context_snapshot.bin)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libcef.so ${CMAKE_BINARY_DIR}/staging/lib/libcef.so)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libEGL.so ${CMAKE_BINARY_DIR}/staging/lib/libEGL.so)
-+# 	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libGLESv2.so ${CMAKE_BINARY_DIR}/staging/lib/libGLESv2.so)
-+#   endif ()
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CEF_RESOURCE_PATH}/locales ${CMAKE_BINARY_DIR}/staging/bin/locales)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef.pak ${CMAKE_BINARY_DIR}/staging/bin/cef.pak)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef_100_percent.pak ${CMAKE_BINARY_DIR}/staging/bin/cef_100_percent.pak)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef_200_percent.pak ${CMAKE_BINARY_DIR}/staging/bin/cef_200_percent.pak)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/cef_extensions.pak ${CMAKE_BINARY_DIR}/staging/bin/cef_extensions.pak)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_RESOURCE_PATH}/devtools_resources.pak ${CMAKE_BINARY_DIR}/staging/bin/devtools_resources.pak)
++	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_LIB_PATH}/icudtl.dat ${CMAKE_BINARY_DIR}/staging/bin/icudtl.dat)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CEF_BIN_PATH}/swiftshader ${CMAKE_BINARY_DIR}/staging/bin/swiftshader)
++	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_LIB_PATH}/natives_blob.bin ${CMAKE_BINARY_DIR}/staging/bin/natives_blob.bin)
++	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_LIB_PATH}/snapshot_blob.bin ${CMAKE_BINARY_DIR}/staging/bin/snapshot_blob.bin)
++	ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_LIB_PATH}/v8_context_snapshot.bin ${CMAKE_BINARY_DIR}/staging/bin/v8_context_snapshot.bin)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libcef.so ${CMAKE_BINARY_DIR}/staging/lib/libcef.so)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libEGL.so ${CMAKE_BINARY_DIR}/staging/lib/libEGL.so)
++	# ADD_CUSTOM_COMMAND (TARGET casparcg POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CEF_BIN_PATH}/libGLESv2.so ${CMAKE_BINARY_DIR}/staging/lib/libGLESv2.so)
+   endif ()
  endif ()
+Index: server-2.3/src/modules/html/CMakeLists.txt
+===================================================================
+--- server-2.3.orig/src/modules/html/CMakeLists.txt
++++ server-2.3/src/modules/html/CMakeLists.txt
+@@ -43,8 +43,7 @@ else()
+ 		common
+ 		core
+ 
+-		${CEF_BIN_PATH}/libcef.so
+-		${CEF_BIN_PATH}/libcef_dll_wrapper.a
++		${CEF_LIB}
+ 	)
+ endif()
+ 
