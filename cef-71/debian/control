@@ -21,14 +21,22 @@ Build-Depends: cmake,
                libnspr4,
                libnss3,
                libpango-1.0-0,
+               libpangocairo-1.0-0,
                libx11-6,
                libxcb1,
+               libx11-xcb1,
                libxcomposite1,
+               libxcursor1,
                libxdamage1,
                libxext6,
                libxfixes3,
+               libxi6,
                libxkbcommon0,
-               libxrandr2
+               libxrandr2,
+               libxrender1,
+               libxss1,
+               libxtst6,
+               libfontconfig1
 Homepage: https://github.com/CasparCG/server/
 Vcs-Git: https://github.com/Julusian/CasparCG-ppa.git
 Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
