@@ -43,7 +43,7 @@ Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
 
 Package: casparcg-server-2.4
 Pre-Depends: ${misc:Pre-Depends}
-Depends: fonts-liberation, casparcg-cef-117 (= 117.2.5~gda4c36a+ubuntu2), ${misc:Depends}, ${shlibs:Depends}
+Depends: fonts-liberation, casparcg-cef-117 (= 117.2.5~gda4c36a+2-jammy1), ${misc:Depends}, ${shlibs:Depends}
 Architecture: any
 Description: layered real-time video compositor to multiple outputs
  Play out professional graphics, audio and video to multiple outputs as a
