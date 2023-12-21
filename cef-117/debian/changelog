@@ -1,3 +1,9 @@
+casparcg-cef-117 (117.2.5~gda4c36a+2-jammy1) jammy; urgency=medium
+
+  * Rebuild
+
+ -- Julusian <me@julusian.co.uk>  Thu, 21 Dec 2023 17:52:49 +0000
+
 casparcg-cef-117 (117.2.5~gda4c36a-jammy1) jammy; urgency=medium
 
   * Fix: Rework version numbering to support multiple series
