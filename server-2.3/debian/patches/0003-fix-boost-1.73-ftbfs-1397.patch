@@ -1,0 +1,40 @@
+From: Filip Hanes <filip@hanes.tech>
+Description: Fix compiling with new version of Boost
+Origin: https://github.com/CasparCG/server/pull/1397
+Applied-Upstream: https://github.com/CasparCG/server/commit/8fce42fabb67b469fe2b6fc0b22af69773b21779
+
+---
+Index: server-2.3/src/common/except.h
+===================================================================
+--- server-2.3.orig/src/common/except.h
++++ server-2.3/src/common/except.h
+@@ -145,7 +145,7 @@ struct not_supported : virtual user_erro
+ 
+ #define CASPAR_THROW_EXCEPTION(x)                                                                                      \
+     ::boost::throw_exception(::boost::enable_error_info(x)                                                             \
+-                             << ::boost::throw_function(BOOST_THROW_EXCEPTION_CURRENT_FUNCTION)                        \
++                             << ::boost::throw_function(BOOST_CURRENT_FUNCTION)                        \
+                              << ::boost::throw_file(__FILE__) << ::boost::throw_line((int)__LINE__)                    \
+                              << stacktrace_info())
+ 
+Index: server-2.3/src/common/log.cpp
+===================================================================
+--- server-2.3.orig/src/common/log.cpp
++++ server-2.3/src/common/log.cpp
+@@ -24,6 +24,7 @@
+ 
+ #include <boost/algorithm/string/predicate.hpp>
+ #include <boost/algorithm/string/replace.hpp>
++#include <boost/bind/bind.hpp>
+ #include <boost/core/null_deleter.hpp>
+ #include <boost/filesystem/operations.hpp>
+ #include <boost/locale.hpp>
+@@ -44,6 +45,8 @@
+ #include <atomic>
+ #include <iostream>
+ 
++using namespace boost::placeholders;
++
+ namespace logging  = boost::log;
+ namespace src      = boost::log::sources;
+ namespace sinks    = boost::log::sinks;

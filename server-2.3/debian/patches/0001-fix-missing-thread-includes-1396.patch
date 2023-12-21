@@ -1,0 +1,42 @@
+From: Filip Hanes <filip@hanes.tech>
+Description: Fix missing thread includes
+Origin: https://github.com/CasparCG/server/pull/1396
+Applied-Upstream: https://github.com/CasparCG/server/commit/9b0990bee89b7a9fa195db75c976c2b20e33ebb5
+
+---
+Index: server-2.3/src/core/diagnostics/osd_graph.cpp
+===================================================================
+--- server-2.3.orig/src/core/diagnostics/osd_graph.cpp
++++ server-2.3/src/core/diagnostics/osd_graph.cpp
+@@ -43,6 +43,7 @@
+ #include <list>
+ #include <memory>
+ #include <mutex>
++#include <thread>
+ #include <tuple>
+ 
+ namespace caspar { namespace core { namespace diagnostics { namespace osd {
+Index: server-2.3/src/modules/decklink/consumer/decklink_consumer.cpp
+===================================================================
+--- server-2.3.orig/src/modules/decklink/consumer/decklink_consumer.cpp
++++ server-2.3/src/modules/decklink/consumer/decklink_consumer.cpp
+@@ -53,6 +53,7 @@
+ #include <future>
+ #include <mutex>
+ #include <queue>
++#include <thread>
+ 
+ namespace caspar { namespace decklink {
+ 
+Index: server-2.3/src/shell/main.cpp
+===================================================================
+--- server-2.3.orig/src/shell/main.cpp
++++ server-2.3/src/shell/main.cpp
+@@ -52,6 +52,7 @@
+ 
+ #include <atomic>
+ #include <future>
++#include <thread>
+ 
+ #include <clocale>
+ #include <csignal>

@@ -1,0 +1,19 @@
+From: Filip Hanes <filip@hanes.tech>
+Description: Fix compiling with new version of Boost
+Origin: https://github.com/CasparCG/server/pull/1420
+Applied-Upstream: https://github.com/CasparCG/server/commit/09c655313cac5951db23a90f8d8ea54c044def8e
+
+---
+Index: server-2.3/src/accelerator/ogl/image/shader.frag
+===================================================================
+--- server-2.3.orig/src/accelerator/ogl/image/shader.frag
++++ server-2.3/src/accelerator/ogl/image/shader.frag
+@@ -468,7 +468,7 @@ vec4 ycbcra_to_rgba(float y, float cb, f
+ 
+ vec4 get_sample(sampler2D sampler, vec2 coords)
+ {
+-    return texture2D(sampler, coords);
++    return texture(sampler, coords);
+ }
+ 
+ vec4 get_rgba_color()

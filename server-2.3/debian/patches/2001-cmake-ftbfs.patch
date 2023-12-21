@@ -1,0 +1,64 @@
+From: Filip Hanes <filip@hanes.tech>
+Description: Fix compiling on Linux
+Forwarded: no
+
+---
+Index: server-2.3/src/CMakeModules/Bootstrap_Linux.cmake
+===================================================================
+--- server-2.3.orig/src/CMakeModules/Bootstrap_Linux.cmake
++++ server-2.3/src/CMakeModules/Bootstrap_Linux.cmake
+@@ -24,8 +24,8 @@ ENDIF ()
+ SET (BOOST_ROOT_PATH "/opt/boost" CACHE STRING "Path to Boost")
+ SET (ENV{BOOST_ROOT} "${BOOST_ROOT_PATH}")
+ SET (Boost_USE_DEBUG_LIBS ON)
+-SET (Boost_USE_RELEASE_LIBS OFF)
+-SET (Boost_USE_STATIC_LIBS ON)
++SET (Boost_USE_RELEASE_LIBS ON)
++SET (Boost_USE_STATIC_LIBS OFF)
+ FIND_PACKAGE (Boost 1.66.0 COMPONENTS system thread chrono filesystem log locale regex date_time coroutine REQUIRED)
+ 
+ SET (FFMPEG_ROOT_PATH "/opt/ffmpeg/lib/pkgconfig" CACHE STRING "Path to FFMPEG")
+@@ -39,6 +39,7 @@ FIND_PACKAGE (GLEW REQUIRED)
+ FIND_PACKAGE (TBB REQUIRED)
+ FIND_PACKAGE (OpenAL REQUIRED)
+ FIND_PACKAGE (SFML 2 COMPONENTS graphics window system REQUIRED)
++FIND_PACKAGE (X11 REQUIRED)
+ 
+ if (ENABLE_HTML)
+ 	SET(CEF_ROOT_DIR "/opt/cef" CACHE STRING "Path to CEF")
+@@ -74,6 +75,9 @@ ADD_COMPILE_OPTIONS (-msse3)
+ ADD_COMPILE_OPTIONS (-mssse3)
+ ADD_COMPILE_OPTIONS (-msse4.1)
+ ADD_COMPILE_OPTIONS (-fnon-call-exceptions) # Allow signal handler to throw exception
++ADD_COMPILE_OPTIONS (-gdwarf-2)
++
++link_libraries(${Boost_LIBRARIES})
+ 
+ ADD_COMPILE_OPTIONS (-Wno-deprecated-declarations -Wno-write-strings -Wno-multichar -Wno-cpp -Werror)
+ IF (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+Index: server-2.3/src/CMakeModules/FindTBB.cmake
+===================================================================
+--- server-2.3.orig/src/CMakeModules/FindTBB.cmake
++++ server-2.3/src/CMakeModules/FindTBB.cmake
+@@ -336,7 +336,7 @@ if(NOT TBB_VERSION)
+ 
+  #only read the start of the file
+  file(READ
+-      "${TBB_INCLUDE_DIR}/tbb/tbb_stddef.h"
++      "${TBB_INCLUDE_DIR}/tbb/tbb.h"
+       TBB_VERSION_CONTENTS
+       LIMIT 2048)
+ 
+Index: server-2.3/src/CMakeModules/PrecompiledHeader.cmake
+===================================================================
+--- server-2.3.orig/src/CMakeModules/PrecompiledHeader.cmake
++++ server-2.3/src/CMakeModules/PrecompiledHeader.cmake
+@@ -193,7 +193,7 @@ function(add_precompiled_header _target
+ 	  set(_pch_compile_flags)
+ 	endif()
+ 	separate_arguments(_pch_compile_flags)
+-	list(APPEND _pch_compile_flags -Winvalid-pch)
++	#list(APPEND _pch_compile_flags -Winvalid-pch)
+ 	if(_PCH_FORCEINCLUDE)
+ 	  list(APPEND _pch_compile_flags -include "${_pchfile}")
+ 	else(_PCH_FORCEINCLUDE)
