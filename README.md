@@ -32,6 +32,19 @@ Sign a build `debsign casparcg-server_XXXXXXXX__source.changes`
 
 Upload a build `dput ppa:casparcg/ppa casparcg-server_XXXXXXXX__source.changes`
 
+#### Working with patches (quilt)
+
+Apply all patches: `QUILT_PATCHES="debian/patches" quilt push -a`
+
+Undo all patches: `QUILT_PATCHES="debian/patches" quilt pop -a`
+
+Refresh a patch: `QUILT_PATCHES="debian/patches" quilt refresh <name>`
+
+Create a patch:
+* `QUILT_PATCHES="debian/patches" quilt new <name>`
+* `QUILT_PATCHES="debian/patches" quilt edit <filename>`
+* `QUILT_PATCHES="debian/patches" quilt refresh`
+
 ### CEF
 
 CEF is published as its own package, to minimise the size of each deb and the build process.
