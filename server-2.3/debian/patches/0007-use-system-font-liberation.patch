@@ -1,0 +1,45 @@
+From 7366b833440b2250ffa54cf0761fc3b63883fa24 Mon Sep 17 00:00:00 2001
+From: Julian Waller <git@julusian.co.uk>
+Date: Thu, 21 Dec 2023 21:25:36 +0000
+Subject: [PATCH] fix(linux): allow loading diag font from system path
+Applied-Upstream: https://github.com/CasparCG/server/commit/7366b833440b2250ffa54cf0761fc3b63883fa24
+
+Not the cleanest solution, but easy and low risk
+---
+ src/CMakeModules/Bootstrap_Linux.cmake | 4 ++++
+ src/core/diagnostics/osd_graph.cpp     | 5 +++++
+ 2 files changed, 9 insertions(+)
+
+Index: server-2.4/src/CMakeModules/Bootstrap_Linux.cmake
+===================================================================
+--- server-2.4.orig/src/CMakeModules/Bootstrap_Linux.cmake
++++ server-2.4/src/CMakeModules/Bootstrap_Linux.cmake
+@@ -69,6 +69,10 @@ if (USE_SYSTEM_BOOST)
+ ADD_DEFINITIONS (-DTBB_USE_CAPTURED_EXCEPTION=1)
+ ADD_DEFINITIONS (-DNDEBUG) # Needed for precompiled headers to work
+ 
++if (USE_SYSTEM_DIAG_FONT)
++    ADD_DEFINITIONS(-DUSE_SYSTEM_DIAG_FONT)
++endif()
++
+ ADD_COMPILE_OPTIONS (-std=c++14) # Needed for precompiled headers to work
+ ADD_COMPILE_OPTIONS (-O3) # Needed for precompiled headers to work
+ ADD_COMPILE_OPTIONS (-msse3)
+Index: server-2.4/src/core/diagnostics/osd_graph.cpp
+===================================================================
+--- server-2.4.orig/src/core/diagnostics/osd_graph.cpp
++++ server-2.4/src/core/diagnostics/osd_graph.cpp
+@@ -66,8 +66,13 @@ sf::Font& get_default_font()
+ {
+     static sf::Font DEFAULT_FONT = []() {
+         sf::Font font;
++#ifdef USE_SYSTEM_DIAG_FONT
++        if (!font.loadFromFile("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf"))
++            CASPAR_THROW_EXCEPTION(file_not_found() << msg_info("/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf not found"));
++#else
+         if (!font.loadFromFile("LiberationMono-Regular.ttf"))
+             CASPAR_THROW_EXCEPTION(file_not_found() << msg_info("LiberationMono-Regular.ttf not found"));
++#endif
+         return font;
+     }();
+ 
