@@ -1,3 +1,10 @@
+casparcg-server-2.4 (2.4.0~beta1+2-jammy2) jammy; urgency=medium
+
+  * Fix: Allow absolute path for config file argument
+  * Fix: Use correct path for diag font
+
+ -- Julusian <me@julusian.co.uk>  Thu, 21 Dec 2023 21:37:00 +0000
+
 casparcg-server-2.4 (2.4.0~beta1+2-jammy1) jammy; urgency=medium
 
   * Fix packaging
