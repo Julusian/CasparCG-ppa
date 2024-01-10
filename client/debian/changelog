@@ -1,3 +1,9 @@
+casparcg-client (2.3.0~rc1-jammy1) jammy; urgency=medium
+
+  * Update to RC
+
+ -- Julian Waller <me@julusian.co.uk>  Wed, 10 Jan 2024 19:59:00 +0000
+
 casparcg-client (2.3.0~0dev-ubuntu1) jammy; urgency=medium
 
   * First upload
