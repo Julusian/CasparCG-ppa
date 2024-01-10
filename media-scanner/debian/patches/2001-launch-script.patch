@@ -1,0 +1,14 @@
+From: Julian Waller <git@julusian.co.uk>
+Date: Wed, 10 Jan 2024 21:58:00 +0000
+Subject: [PATCH] Add launch script
+Forwarded: no
+
+---
+Index: media-scanner/ubuntu-launch.sh
+===================================================================
+--- /dev/null
++++ server-2.3/ubuntu-launch.sh
+@@ -0,0 +1,3 @@
++#!/bin/sh
++
++/usr/lib/casparcg-scanner/casparcg-scanner $@

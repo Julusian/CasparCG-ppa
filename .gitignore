@@ -17,3 +17,6 @@ server-*/*
 
 client/*
 !client/debian
+
+media-scanner/*
+!media-scanner/debian
