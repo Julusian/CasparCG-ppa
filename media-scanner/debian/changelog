@@ -1,3 +1,9 @@
+casparcg-scanner (1.3.3-ubuntu1) jammy; urgency=medium
+
+  * Fix: Ignore paths that begin with underscore by @nytamin in #73
+
+ -- Julian Waller <me@julusian.co.uk>  Mon, 22 Jan 2024 21:27:00 +0000
+
 casparcg-scanner (1.3.2-ubuntu1) jammy; urgency=medium
 
   * Fix: failure to update database
