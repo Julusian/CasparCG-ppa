@@ -1,3 +1,15 @@
+casparcg-server-2.4 (2.4.0~stable-jammy1) jammy; urgency=medium
+
+  * Update to stable release
+
+ -- Julian Waller <me@julusian.co.uk>  Wed, 17 Apr 2024 18:06:00 +0000
+
+casparcg-server-2.4 (2.4.0~0-jammy1) jammy; urgency=medium
+
+  * Update to stable release
+
+ -- Julian Waller <me@julusian.co.uk>  Wed, 17 Apr 2024 17:57:00 +0000
+
 casparcg-server-2.4 (2.4.0~rc1-jammy1) jammy; urgency=medium
 
   * Update to RC1
