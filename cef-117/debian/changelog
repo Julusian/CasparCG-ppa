@@ -1,3 +1,9 @@
+casparcg-cef-117 (117.2.5~gda4c36a+2-noble1.2) noble; urgency=medium
+
+  * Fix alsa dependency
+
+ --  <me@julusian.co.uk>  Sun, 12 May 2024 22:03:56 +0000
+
 casparcg-cef-117 (117.2.5~gda4c36a+2-noble1.1) noble; urgency=medium
 
   * Fix build
