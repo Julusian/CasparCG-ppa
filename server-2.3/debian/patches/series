@@ -1,7 +1,0 @@
-0001-fix-missing-thread-includes-1396.patch
-0003-fix-boost-1.73-ftbfs-1397.patch
-0004-fix-shader-frag.patch
-0006-absolute-config-path.patch
-0007-use-system-font-liberation.patch
-2001-cmake-ftbfs.patch
-2002-use-system-cef.patch

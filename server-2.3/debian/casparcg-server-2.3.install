@@ -1,9 +1,0 @@
-#!/usr/bin/dh-exec
-[amd64] obj-x86_64-linux-gnu/staging/bin/casparcg => /usr/lib/casparcg-server-2.3/casparcg-server-2.3
-src/ubuntu-launch.sh => /usr/bin/casparcg-server-2.3 
-src/shell/casparcg.config => /usr/share/casparcg-server-2.3/casparcg.config.example
-
-obj-x86_64-linux-gnu/staging/bin/icudtl.dat => /usr/lib/casparcg-server-2.3/icudtl.dat
-obj-x86_64-linux-gnu/staging/bin/natives_blob.bin => /usr/lib/casparcg-server-2.3/natives_blob.bin
-obj-x86_64-linux-gnu/staging/bin/snapshot_blob.bin => /usr/lib/casparcg-server-2.3/snapshot_blob.bin
-obj-x86_64-linux-gnu/staging/bin/v8_context_snapshot.bin => /usr/lib/casparcg-server-2.3/v8_context_snapshot.bin
