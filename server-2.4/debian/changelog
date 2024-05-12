@@ -1,42 +1,5 @@
-casparcg-server-2.4 (2.4.0~stable-jammy1) jammy; urgency=medium
-
-  * Update to stable release
-
- -- Julian Waller <me@julusian.co.uk>  Wed, 17 Apr 2024 18:06:00 +0000
-
-casparcg-server-2.4 (2.4.0~0-jammy1) jammy; urgency=medium
-
-  * Update to stable release
-
- -- Julian Waller <me@julusian.co.uk>  Wed, 17 Apr 2024 17:57:00 +0000
-
-casparcg-server-2.4 (2.4.0~rc1-jammy1) jammy; urgency=medium
-
-  * Update to RC1
-
- -- Julian Waller <me@julusian.co.uk>  Wed, 10 Jan 2024 20:27:00 +0000
-
-casparcg-server-2.4 (2.4.0~beta1+2-jammy2) jammy; urgency=medium
-
-  * Fix: Allow absolute path for config file argument
-  * Fix: Use correct path for diag font
-
- -- Julusian <me@julusian.co.uk>  Thu, 21 Dec 2023 21:37:00 +0000
-
-casparcg-server-2.4 (2.4.0~beta1+2-jammy1) jammy; urgency=medium
-
-  * Fix packaging
-
- -- Julusian <me@julusian.co.uk>  Thu, 21 Dec 2023 20:06:00 +0000
-
-casparcg-server-2.4 (2.4.0~beta1-jammy2) jammy; urgency=medium
-
-  * Fix packaging
-
- -- Julusian <me@julusian.co.uk>  Thu, 21 Dec 2023 17:52:49 +0000
-
-casparcg-server-2.4 (2.4.0~beta1-jammy1) jammy; urgency=medium
+casparcg-server-2.4 (2.4.0~stable-noble1) noble; urgency=medium
 
   * First upload
 
- -- Julian Waller <me@julusian.co.uk>  Thu, 14 Dec 2023 23:18:00 +0000
+ -- Julian Waller <me@julusian.co.uk>  Sun, 12 May 2024 22:13:55 +0000
