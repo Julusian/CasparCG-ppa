@@ -1,23 +1,11 @@
-casparcg-cef-117 (117.2.5~gda4c36a+2-jammy1) jammy; urgency=medium
+casparcg-cef-117 (117.2.5~gda4c36a+2-noble1.1) noble; urgency=medium
 
-  * Rebuild
+  * Fix build
 
- -- Julusian <me@julusian.co.uk>  Thu, 21 Dec 2023 17:52:49 +0000
+ --  <me@julusian.co.uk>  Sun, 12 May 2024 21:40:28 +0000
 
-casparcg-cef-117 (117.2.5~gda4c36a-jammy1) jammy; urgency=medium
-
-  * Fix: Rework version numbering to support multiple series
-
- -- Julian Waller <me@julusian.co.uk>  Fri, 15 Dec 2023 01:27:00 +0000
-
-casparcg-cef-117 (117.2.5~gda4c36a+ubuntu2) jammy; urgency=medium
-
-  * Fix: Missing contents of binary package
-
- -- Julian Waller <me@julusian.co.uk>  Thu, 14 Dec 2023 23:03:09 +0000
-
-casparcg-cef-117 (117.2.5~gda4c36a+ubuntu1) jammy; urgency=medium
+casparcg-cef-117 (117.2.5~gda4c36a+2-noble1) noble; urgency=medium
 
   * First upload
 
- -- Julian Waller <me@julusian.co.uk>  Thu, 14 Dec 2023 21:40:00 +0000
+ -- Julian Waller <me@julusian.co.uk>  Wed, 01 May 2024 17:34:00 +0000

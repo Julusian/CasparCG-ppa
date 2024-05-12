@@ -45,6 +45,10 @@ Create a patch:
 * `QUILT_PATCHES="debian/patches" quilt edit <filename>`
 * `QUILT_PATCHES="debian/patches" quilt refresh`
 
+### Install build dependencies
+
+You can use the command `sudo mk-build-deps cef-117/debian/control` to make a deb package which will install all the build dependencies specified
+
 ### CEF
 
 CEF is published as its own package, to minimise the size of each deb and the build process.
