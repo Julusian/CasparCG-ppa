@@ -11,10 +11,10 @@ Build-Depends: cmake,
                libqt6gui6,
                libqt6widgets6,
                libqt6core5compat6-dev,
-               libgl1-mesa-dev,
+               libgl-dev,
                libvlc-dev,
                libvlccore-dev,
-               pkg-config
+               pkgconf
 Homepage: https://github.com/CasparCG/server/
 Vcs-Git: https://github.com/Julusian/CasparCG-ppa.git
 Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
