@@ -1,3 +1,9 @@
+casparcg-client (2.3.0~stable+2-jammy1) jammy; urgency=medium
+
+  * Fix build
+
+ -- Julian Waller <me@julusian.co.uk>  Mon, 13 May 2024 10:44:25 +0100
+
 casparcg-client (2.3.0~stable-jammy1) jammy; urgency=medium
 
   * Update to Stable release
