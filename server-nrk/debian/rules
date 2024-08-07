@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+%:
+	dh $@ --sourcedirectory=src --buildsystem=cmake
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DUSE_SYSTEM_CEF=ON -DUSE_STATIC_BOOST=OFF -DUSE_SYSTEM_FFMPEG=ON -DDIAG_FONT_PATH=/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf
+
+# Generate and install manual page
+debian/casparcg-server-nrk.1: debian/casparcg.txt2man
+	txt2man -t CASPARCG -d 2018-12-14 -s 1 debian/casparcg.txt2man > $@
+
+override_dh_installman: debian/casparcg-server-nrk.1
+	dh_installman
+	$(RM) debian/casparcg-server-nrk.1
