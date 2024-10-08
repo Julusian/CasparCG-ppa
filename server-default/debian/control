@@ -1,0 +1,17 @@
+Source: casparcg-server-default
+Section: video
+Priority: optional
+Maintainer: Julian Waller <git@julusian.co.uk>
+Rules-Requires-Root: no
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0.1
+Vcs-Git: https://github.com/Julusian/CasparCG-ppa.git
+Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
+
+Package: casparcg-server
+Architecture: any
+Multi-Arch: foreign
+Depends: casparcg-server-2.4
+Description: layered real-time video compositor to multiple outputs
+ Play out professional graphics, audio and video to multiple outputs as a
+ layerbased real-time compositor.
