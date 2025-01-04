@@ -1,3 +1,9 @@
+casparcg-server-2.4 (2.4.2~stable-noble1) noble; urgency=medium
+
+  * Update to v2.4.2 stable 
+
+ -- Julian Waller <me@julusian.co.uk>  Sat, 04 Jan 2025 15:46:43 +0100
+
 casparcg-server-2.4 (2.4.1~stable-noble1) noble; urgency=medium
 
   * Update to v2.4.1 stable 
