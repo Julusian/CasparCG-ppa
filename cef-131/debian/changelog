@@ -1,3 +1,9 @@
+casparcg-cef-131 (131.4.1~g437feba-jammy2) jammy; urgency=medium
+
+  * Fix incorrect dependency
+
+ -- Julian Waller <me@julusian.co.uk>  Thu, 09 Jan 2025 16:23:47 +0000
+
 casparcg-cef-131 (131.4.1~g437feba-jammy1) jammy; urgency=medium
 
   * First upload
