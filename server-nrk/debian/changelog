@@ -1,3 +1,9 @@
+casparcg-server-nrk (2.4.1~nrk-jammy1) jammy; urgency=medium
+
+  * Update to 2.4.1NRK
+
+ -- Julian Waller <me@julusian.co.uk>  Wed, 16 Apr 2025 09:54:00 +0000
+
 casparcg-server-nrk (2.4.0~rc5-jammy1) jammy; urgency=medium
 
   * First upload
