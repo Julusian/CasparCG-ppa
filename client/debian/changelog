@@ -1,3 +1,9 @@
+casparcg-client (2.3.1~stable+2-noble1) noble; urgency=medium
+
+  * Update to 2.3.1
+
+ -- Julian Waller <me@julusian.co.uk>  Fri, 14 Nov 2025 11:50:00 +0000
+ 
 casparcg-client (2.3.1~stable-noble1) noble; urgency=medium
 
   * Update to 2.3.1
