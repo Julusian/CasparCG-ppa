@@ -1,3 +1,9 @@
+casparcg-cef-142 (142.0.17~g60aac24+2-jammy1) jammy; urgency=medium
+
+  * Fix build issue
+
+ -- Julian Waller <me@julusian.co.uk>  Mon, 01 Dec 2025 13:12:00 +0000
+
 casparcg-cef-142 (142.0.17~g60aac24-jammy1) jammy; urgency=medium
 
   * First upload
