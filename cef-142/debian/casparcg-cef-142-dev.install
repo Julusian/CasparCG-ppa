@@ -1,0 +1,3 @@
+
+include /usr/include/casparcg-cef-142/
+obj-*/libcef_dll_wrapper/libcef_dll_wrapper.a /usr/lib/casparcg-cef-142/
