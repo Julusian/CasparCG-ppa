@@ -22,7 +22,7 @@ This process is based upon the [debian guide](https://wiki.debian.org/BuildingTu
 ### General notes
 
 Add changelog entry `dch`  
-Make sure to replace the `UNRELEASED` tag with ubuntu distribution (currently `jammy`)
+Make sure to replace the `UNRELEASED` tag with ubuntu distribution (currently `noble`)
 
 Build binary versions of each package: `debuild -b -uc -us`
 
