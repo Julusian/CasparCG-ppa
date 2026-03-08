@@ -1,3 +1,9 @@
+casparcg-server-default (2.5) jammy; urgency=medium
+
+  * Update to 2.5
+
+ -- Julian Waller <me@julusian.co.uk>  Sun, 08 Mar 2026 22:25:00 +0000
+
 casparcg-server-default (2.4) jammy; urgency=medium
 
   * Initial upload
