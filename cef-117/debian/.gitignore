@@ -1,6 +1,0 @@
-.debhelper
-debhelper-build-stamp
-/casparcg-cef-*/
-*.log
-*.substvars
-/files
