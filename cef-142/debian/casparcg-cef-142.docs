@@ -1,2 +1,1 @@
-LICENSE.txt
-README.txt
+# Installed via override_dh_installdocs in debian/rules

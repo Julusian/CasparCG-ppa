@@ -37,7 +37,7 @@ Package: casparcg-cef-142
 Section: libs
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Architecture: amd64
+Architecture: amd64 arm64
 Description: chromiumembedded for casparcg-server
   This is its extended description.
 
@@ -45,6 +45,6 @@ Package: casparcg-cef-142-dev
 Section: libdevel
 Pre-Depends: ${misc:Pre-Depends}
 Depends: casparcg-cef-142 (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
-Architecture: amd64
+Architecture: amd64 arm64
 Description: chromiumembedded for casparcg-server
   This is its extended description.

@@ -1,3 +1,36 @@
 #!/usr/bin/make -f
+include /usr/share/dpkg/architecture.mk
+
+# Both amd64 and arm64 are shipped as orig-ARCH component tarballs,
+# which dpkg-source extracts into ARCH/ subdirectories.
+CEF_DIR = $(DEB_HOST_ARCH)
+
+export DH_VERBOSE = 1
+
 %:
 	dh $@
+
+override_dh_auto_configure:
+	mkdir -p obj-$(DEB_HOST_GNU_TYPE)
+	cd obj-$(DEB_HOST_GNU_TYPE) && cmake \
+	    -DCMAKE_BUILD_TYPE=Release \
+	    -DCEF_ROOT=$(CURDIR)/$(CEF_DIR) \
+	    $(CURDIR)/$(CEF_DIR)
+
+override_dh_auto_build:
+	$(MAKE) -C obj-$(DEB_HOST_GNU_TYPE) libcef_dll_wrapper
+
+override_dh_auto_test:
+
+override_dh_installdocs:
+	dh_installdocs $(CEF_DIR)/LICENSE.txt $(CEF_DIR)/README.txt
+
+override_dh_auto_install:
+	install -d debian/casparcg-cef-142/usr/lib/casparcg-cef-142
+	cp -r $(CEF_DIR)/Release/. debian/casparcg-cef-142/usr/lib/casparcg-cef-142/
+	cp -r $(CEF_DIR)/Resources/. debian/casparcg-cef-142/usr/lib/casparcg-cef-142/
+	install -d debian/casparcg-cef-142-dev/usr/include/casparcg-cef-142
+	cp -r $(CEF_DIR)/include/. debian/casparcg-cef-142-dev/usr/include/casparcg-cef-142/
+	install -d debian/casparcg-cef-142-dev/usr/lib/casparcg-cef-142
+	find obj-$(DEB_HOST_GNU_TYPE) -name 'libcef_dll_wrapper.a' \
+	  -exec install -Dm644 {} debian/casparcg-cef-142-dev/usr/lib/casparcg-cef-142/libcef_dll_wrapper.a \;
