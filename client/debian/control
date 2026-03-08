@@ -7,7 +7,7 @@ Build-Depends: cmake,
                debhelper-compat (= 13),
                libboost-thread-dev,
                qt6-base-dev,
-               libqt6websockets6-dev,
+               qt6-websockets-dev,
                libqt6gui6,
                libqt6widgets6,
                libqt6core5compat6-dev,
@@ -15,7 +15,7 @@ Build-Depends: cmake,
                libvlc-dev,
                libvlccore-dev,
                pkgconf
-Homepage: https://github.com/CasparCG/server/
+Homepage: https://github.com/CasparCG/client/
 Vcs-Git: https://github.com/Julusian/CasparCG-ppa.git
 Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
 

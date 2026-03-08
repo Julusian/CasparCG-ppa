@@ -1,17 +1,6 @@
-casparcg-client (2.3.1~stable+2-noble1) noble; urgency=medium
+casparcg-client (2.3.1~stable+2-resolute1) noble; urgency=medium
 
-  * Update to 2.3.1
+  * First upload to resolute
 
- -- Julian Waller <me@julusian.co.uk>  Fri, 14 Nov 2025 11:50:00 +0000
+ -- Julian Waller <me@julusian.co.uk>  Sun, 08 Mar 2026 23:28:00 +0000
  
-casparcg-client (2.3.1~stable-noble1) noble; urgency=medium
-
-  * Update to 2.3.1
-
- -- Julian Waller <me@julusian.co.uk>  Thu, 13 Nov 2025 18:04:00 +0000
-
-casparcg-client (2.3.0~stable+2-noble1) noble; urgency=medium
-
-  * First upload to noble
-
- -- Julian Waller <me@julusian.co.uk>  Sun, 12 May 2024 22:36:40 +0000
