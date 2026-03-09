@@ -23,10 +23,10 @@ Build-Depends: cmake,
                libboost-thread-dev,
                libfreeimage-dev,
                libicu-dev,
+               libegl-dev,
                libglew-dev,
                libjpeg-dev,
                libopenal-dev,
-               libpostproc-dev,
                libsfml-dev,
                libsimde-dev,
                libswresample-dev,
@@ -43,7 +43,7 @@ Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
 
 Package: casparcg-server-2.5
 Pre-Depends: ${misc:Pre-Depends}
-Depends: fonts-liberation, casparcg-cef-142 (= 142.0.17~g60aac24+2-noble1), ${misc:Depends}, ${shlibs:Depends}
+Depends: fonts-liberation, casparcg-cef-142 (= 142.0.17~g60aac24+3-resolute3), ${misc:Depends}, ${shlibs:Depends}
 Architecture: amd64
 Description: layered real-time video compositor to multiple outputs
  Play out professional graphics, audio and video to multiple outputs as a

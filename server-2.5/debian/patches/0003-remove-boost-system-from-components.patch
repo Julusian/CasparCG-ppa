@@ -1,0 +1,26 @@
+From: Julian Waller <me@julusian.co.uk>
+Date: Sun, 8 Mar 2026 00:00:00 +0000
+Subject: [PATCH] fix: Remove boost_system from find_package COMPONENTS
+
+With CMake 4.x (CMP0167 NEW), FindBoost is removed and BoostConfig.cmake
+is used exclusively. In modern Ubuntu/Boost releases, boost_system is
+fully header-only and boost_systemConfig.cmake is no longer installed as
+a separate package. Removing it from COMPONENTS lets the build proceed;
+the boost::system::error_code type is still available via Boost::headers.
+---
+ src/CMakeModules/Bootstrap_Linux.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/CMakeModules/Bootstrap_Linux.cmake b/src/CMakeModules/Bootstrap_Linux.cmake
+index 1111111..2222222 100644
+--- a/src/CMakeModules/Bootstrap_Linux.cmake
++++ b/src/CMakeModules/Bootstrap_Linux.cmake
+@@ -30,7 +30,7 @@ MARK_AS_ADVANCED (CMAKE_INSTALL_PREFIX)
+ if (USE_STATIC_BOOST)
+ 	SET (Boost_USE_STATIC_LIBS ON)
+ endif()
+-find_package(Boost 1.74.0 COMPONENTS system thread filesystem log_setup log locale regex date_time coroutine REQUIRED)
++find_package(Boost 1.74.0 COMPONENTS thread filesystem log_setup log locale regex date_time coroutine REQUIRED)
+ find_package(FFmpeg REQUIRED)
+ find_package(OpenGL REQUIRED COMPONENTS OpenGL GLX EGL)
+ find_package(GLEW REQUIRED)
