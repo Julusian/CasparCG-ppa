@@ -6,6 +6,10 @@ DEB_HOST_ARCH_CPU  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 DEB_HOST_ARCH_OS   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 
+SCANNER_BINARY_amd64 = $(firstword $(wildcard $(CURDIR)/amd64/casparcg-scanner-*-linux-x64))
+SCANNER_BINARY_arm64 = $(firstword $(wildcard $(CURDIR)/arm64/casparcg-scanner-*-linux-arm64))
+SCANNER_BINARY = $(SCANNER_BINARY_$(DEB_HOST_ARCH))
+
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
@@ -30,14 +34,7 @@ install: build
 	dh_testroot
 	dh_prep
 	dh_installdirs
-	install -Dm 644 $(CURDIR)/prebuilds/linux-x64/node.napi.glibc.node $(CURDIR)/debian/casparcg-scanner/usr/lib/casparcg-scanner/prebuilds/linux-x64/node.napi.glibc.node
-# ifeq ($(DEB_HOST_ARCH),amd64)
-	install -Dm 755 $(CURDIR)/scanner $(CURDIR)/debian/casparcg-scanner/usr/lib/casparcg-scanner/casparcg-scanner
-# else
-# 	install -Dm 755 $(CURDIR)/atom-linux32.tar.xz \
-# 		$(CURDIR)/debian/atom/opt/atom/atom-linux32.tar.xz
-# endif
-	install -Dm 755 $(CURDIR)/ubuntu-launch.sh $(CURDIR)/debian/casparcg-scanner/usr/bin/casparcg-scanner
+	install -Dm 755 $(SCANNER_BINARY) $(CURDIR)/debian/casparcg-scanner/usr/lib/casparcg-scanner/casparcg-scanner
 
 # Build architecture-independent files here.
 binary-indep: build install
