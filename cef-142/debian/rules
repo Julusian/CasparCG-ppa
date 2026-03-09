@@ -37,8 +37,8 @@ override_dh_auto_install:
 	install -d debian/casparcg-cef-142/usr/lib/casparcg-cef-142
 	cp -r $(CEF_DIR)/Release/. debian/casparcg-cef-142/usr/lib/casparcg-cef-142/
 	cp -r $(CEF_DIR)/Resources/. debian/casparcg-cef-142/usr/lib/casparcg-cef-142/
-	install -d debian/casparcg-cef-142-dev/usr/include/casparcg-cef-142
-	cp -r $(CEF_DIR)/include/. debian/casparcg-cef-142-dev/usr/include/casparcg-cef-142/
+	install -d debian/casparcg-cef-142-dev/usr/include/casparcg-cef-142/include
+	cp -r $(CEF_DIR)/include/. debian/casparcg-cef-142-dev/usr/include/casparcg-cef-142/include/
 	install -d debian/casparcg-cef-142-dev/usr/lib/casparcg-cef-142
 	find obj-$(DEB_HOST_GNU_TYPE) -name 'libcef_dll_wrapper.a' \
 	  -exec install -Dm644 {} debian/casparcg-cef-142-dev/usr/lib/casparcg-cef-142/libcef_dll_wrapper.a \;

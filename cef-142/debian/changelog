@@ -1,3 +1,9 @@
+casparcg-cef-142 (142.0.17~g60aac24+3-resolute3) resolute; urgency=medium
+
+  * Fix CEF header install path to preserve include/ subdirectory
+
+ -- Julian Waller <me@julusian.co.uk>  Mon, 09 Mar 2026 00:11:00 +0000
+
 casparcg-cef-142 (142.0.17~g60aac24+3-resolute2) resolute; urgency=medium
 
   * Fix arm64 build
