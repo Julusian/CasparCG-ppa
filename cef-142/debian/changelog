@@ -1,3 +1,10 @@
+casparcg-cef-142 (142.0.17~g60aac24+3-resolute2) resolute; urgency=medium
+
+  * Fix arm64 build
+
+ -- Julian Waller <me@julusian.co.uk>  Sun, 08 Mar 2026 23:57:00 +0000
+
+
 casparcg-cef-142 (142.0.17~g60aac24+3-resolute1) resolute; urgency=medium
 
   * First upload

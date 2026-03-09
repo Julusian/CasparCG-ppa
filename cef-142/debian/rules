@@ -10,10 +10,18 @@ export DH_VERBOSE = 1
 %:
 	dh $@
 
+# Map DEB_HOST_ARCH to the PROJECT_ARCH name expected by CEF's cmake
+ifeq ($(DEB_HOST_ARCH),arm64)
+  CEF_PROJECT_ARCH = arm64
+else
+  CEF_PROJECT_ARCH = x86_64
+endif
+
 override_dh_auto_configure:
 	mkdir -p obj-$(DEB_HOST_GNU_TYPE)
 	cd obj-$(DEB_HOST_GNU_TYPE) && cmake \
 	    -DCMAKE_BUILD_TYPE=Release \
+	    -DPROJECT_ARCH=$(CEF_PROJECT_ARCH) \
 	    -DCEF_ROOT=$(CURDIR)/$(CEF_DIR) \
 	    $(CURDIR)/$(CEF_DIR)
 
