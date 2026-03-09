@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
 Package: casparcg-scanner
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}, ffmpeg
-Architecture: amd64
+Architecture: amd64 arm64
 Description: media scanner for casparcg-server
  Play out professional graphics, audio and video to multiple outputs as a
  layerbased real-time compositor.

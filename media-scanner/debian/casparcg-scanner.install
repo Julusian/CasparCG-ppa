@@ -1,2 +1,1 @@
-#!/usr/bin/dh-exec
-scanner => /usr/lib/casparcg-scanner/casparcg-scanner
+usr/lib/casparcg-scanner/casparcg-scanner
