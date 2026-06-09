@@ -1,0 +1,253 @@
+From 4ad7043a4a153cd07dd838ace2c674d7559c1d8e Mon Sep 17 00:00:00 2001
+From: Dimitry Ishenko <dimitry.ishenko@gmail.com>
+Date: Sun, 8 Mar 2026 16:34:38 -0400
+Subject: [PATCH] Add support for SFML 3 on Linux
+
+Stub out diagnostic window code for SFML 3 until it's replaced with a
+standalone app.
+---
+ src/CMakeModules/Bootstrap_Linux.cmake        |  5 ++-
+ src/CMakeModules/Bootstrap_Windows.cmake      |  4 +--
+ src/accelerator/CMakeLists.txt                |  3 +-
+ src/accelerator/ogl/util/context.cpp          | 23 +++++++++++--
+ src/core/diagnostics/osd_graph.cpp            | 10 ++++++
+ src/modules/screen/CMakeLists.txt             |  2 +-
+ .../screen/consumer/screen_consumer.cpp       | 32 ++++++++++++++++++-
+ src/modules/screen/util/x11_util.cpp          |  4 +++
+ 8 files changed, 73 insertions(+), 10 deletions(-)
+
+diff --git a/src/CMakeModules/Bootstrap_Linux.cmake b/src/CMakeModules/Bootstrap_Linux.cmake
+index b4b23561d5..ee02aa1239 100644
+--- a/src/CMakeModules/Bootstrap_Linux.cmake
++++ b/src/CMakeModules/Bootstrap_Linux.cmake
+@@ -36,7 +36,10 @@ find_package(OpenGL REQUIRED COMPONENTS OpenGL GLX EGL)
+ find_package(GLEW REQUIRED)
+ find_package(TBB REQUIRED)
+ find_package(OpenAL REQUIRED)
+-find_package(SFML 2 COMPONENTS graphics window REQUIRED)
++find_package(SFML 3 COMPONENTS Graphics System Window QUIET)
++if(NOT SFML_FOUND)
++    find_package(SFML 2 COMPONENTS graphics system window REQUIRED)
++endif()
+ find_package(X11 REQUIRED)
+ 
+ if (ENABLE_HTML)
+diff --git a/src/CMakeModules/Bootstrap_Windows.cmake b/src/CMakeModules/Bootstrap_Windows.cmake
+index 01652e13f9..06bda96505 100644
+--- a/src/CMakeModules/Bootstrap_Windows.cmake
++++ b/src/CMakeModules/Bootstrap_Windows.cmake
+@@ -160,11 +160,11 @@ FetchContent_MakeAvailable(sfml)
+ 
+ list(APPEND CMAKE_PREFIX_PATH ${sfml_SOURCE_DIR}/lib/cmake/SFML)
+ # set(SFML_STATIC_LIBRARIES TRUE)
+-find_package(SFML 2 COMPONENTS graphics window REQUIRED)
++find_package(SFML 2 COMPONENTS graphics system window REQUIRED)
+ 
+ casparcg_add_runtime_dependency_from_target(sfml-graphics)
+-casparcg_add_runtime_dependency_from_target(sfml-window)
+ casparcg_add_runtime_dependency_from_target(sfml-system)
++casparcg_add_runtime_dependency_from_target(sfml-window)
+ 
+ #ZLIB
+ casparcg_add_external_project(zlib)
+diff --git a/src/accelerator/CMakeLists.txt b/src/accelerator/CMakeLists.txt
+index 56e708454f..8e4032dc21 100644
+--- a/src/accelerator/CMakeLists.txt
++++ b/src/accelerator/CMakeLists.txt
+@@ -42,8 +42,7 @@ bin2c("ogl/image/shader.frag" "ogl_image_fragment.h" "caspar::accelerator::ogl"
+ casparcg_add_library(accelerator SOURCES ${SOURCES} ${HEADERS})
+ target_include_directories(accelerator PRIVATE .. ${CMAKE_CURRENT_BINARY_DIR})
+ target_precompile_headers(accelerator PRIVATE StdAfx.h)
+-target_link_libraries(accelerator PRIVATE common core GLEW::glew)
+-target_link_libraries(accelerator PRIVATE sfml-window)
++target_link_libraries(accelerator PRIVATE common core GLEW::glew sfml-window)
+ 
+ source_group(sources ./.*)
+ source_group(sources\\cpu\\image cpu/image/.*)
+diff --git a/src/accelerator/ogl/util/context.cpp b/src/accelerator/ogl/util/context.cpp
+index 40ae56c4ce..1702cd1af8 100644
+--- a/src/accelerator/ogl/util/context.cpp
++++ b/src/accelerator/ogl/util/context.cpp
+@@ -4,12 +4,18 @@
+ #include <common/log.h>
+ 
+ #include <SFML/Window/Context.hpp>
++#if SFML_VERSION_MAJOR >= 3
++#include <SFML/Window/ContextSettings.hpp>
++#endif
++
++#include <tuple> // std::ignore
+ 
+ #ifndef _MSC_VER
+ #include <EGL/egl.h>
+ #include <common/gl/gl_check.h>
+ #include <stdlib.h>
+ #endif
++
+ namespace caspar::accelerator::ogl {
+ 
+ struct device_context::impl
+@@ -23,15 +29,26 @@ struct impl_sfml : public device_context::impl
+     sf::Context device_;
+ 
+     impl_sfml()
++#if SFML_VERSION_MAJOR >= 3
++        : device_(sf::ContextSettings{
++              .depthBits         = 0,
++              .stencilBits       = 0,
++              .antiAliasingLevel = 0,
++              .majorVersion      = 4,
++              .minorVersion      = 5,
++              .attributeFlags    = sf::ContextSettings::Attribute::Core
++          }, {1, 1})
++#else
+         : device_(sf::ContextSettings(0, 0, 0, 4, 5, sf::ContextSettings::Attribute::Core), 1, 1)
++#endif
+     {
+         CASPAR_LOG(info) << L"Initializing OpenGL Device (sfml).";
+     }
+ 
+     virtual ~impl_sfml() {}
+ 
+-    virtual void bind() override { device_.setActive(true); }
+-    virtual void unbind() override { device_.setActive(false); }
++    virtual void bind() override { std::ignore = device_.setActive(true); }
++    virtual void unbind() override { std::ignore = device_.setActive(false); }
+ };
+ 
+ #ifndef _MSC_VER
+@@ -117,4 +134,4 @@ device_context::~device_context() {}
+ void device_context::bind() { impl_->bind(); }
+ void device_context::unbind() { impl_->unbind(); }
+ 
+-} // namespace caspar::accelerator::ogl
+\ No newline at end of file
++} // namespace caspar::accelerator::ogl
+diff --git a/src/core/diagnostics/osd_graph.cpp b/src/core/diagnostics/osd_graph.cpp
+index bd74f4c592..dbadf8f314 100644
+--- a/src/core/diagnostics/osd_graph.cpp
++++ b/src/core/diagnostics/osd_graph.cpp
+@@ -51,6 +51,14 @@ namespace fs = std::filesystem;
+ 
+ namespace caspar { namespace core { namespace diagnostics { namespace osd {
+ 
++#if SFML_VERSION_MAJOR >= 3
++
++void register_sink() { }
++void show_graphs(bool value) { }
++void shutdown() { }
++
++#else
++
+ static const int PREFERRED_VERTICAL_GRAPHS = 8;
+ static const int RENDERING_WIDTH           = 1024;
+ static const int RENDERING_HEIGHT          = RENDERING_WIDTH / PREFERRED_VERTICAL_GRAPHS;
+@@ -513,4 +521,6 @@ void show_graphs(bool value) { context::show(value); }
+ 
+ void shutdown() { context::shutdown(); }
+ 
++#endif
++
+ }}}} // namespace caspar::core::diagnostics::osd
+diff --git a/src/modules/screen/CMakeLists.txt b/src/modules/screen/CMakeLists.txt
+index fb14f819eb..6ca261e5a3 100644
+--- a/src/modules/screen/CMakeLists.txt
++++ b/src/modules/screen/CMakeLists.txt
+@@ -31,7 +31,7 @@ target_include_directories(screen PRIVATE
+     ${CMAKE_CURRENT_BINARY_DIR}
+     ${FFMPEG_INCLUDE_PATH}
+ )
+-target_link_libraries(screen PRIVATE accelerator ffmpeg GLEW::glew sfml-window)
++target_link_libraries(screen PRIVATE accelerator ffmpeg GLEW::glew sfml-system sfml-window)
+ 
+ set_target_properties(screen PROPERTIES FOLDER modules)
+ source_group(sources\\consumer consumer/*)
+diff --git a/src/modules/screen/consumer/screen_consumer.cpp b/src/modules/screen/consumer/screen_consumer.cpp
+index 39a8cb89ad..38b6e402a0 100644
+--- a/src/modules/screen/consumer/screen_consumer.cpp
++++ b/src/modules/screen/consumer/screen_consumer.cpp
+@@ -47,6 +47,7 @@
+ #include <tbb/concurrent_queue.h>
+ 
+ #include <thread>
++#include <tuple> // std::ignore
+ #include <utility>
+ #include <vector>
+ 
+@@ -252,6 +253,23 @@ struct screen_consumer
+ 
+         thread_ = std::thread([this] {
+             try {
++#if SFML_VERSION_MAJOR >= 3
++                sf::VideoMode mode{
++                    sf::Vector2u(config_.sbs_key ? screen_width_ * 2 : screen_width_, screen_height_),
++                    sf::VideoMode::getDesktopMode().bitsPerPixel
++                };
++                sf::ContextSettings settings{
++                    .depthBits         = 0,
++                    .stencilBits       = 0,
++                    .antiAliasingLevel = 0,
++                    .majorVersion      = 4,
++                    .minorVersion      = 5,
++                    .attributeFlags    = sf::ContextSettings::Attribute::Core
++                };
++                auto state = config_.windowed || config_.borderless ? sf::State::Windowed : sf::State::Fullscreen;
++                auto style = config_.borderless ? sf::Style::None : sf::Style::Default;
++                window_.create(mode, u8(print()), style, state, settings);
++#else
+                 const auto    window_style = config_.borderless ? sf::Style::None
+                                              : config_.windowed ? sf::Style::Resize | sf::Style::Close
+                                                                 : sf::Style::Fullscreen;
+@@ -262,9 +280,10 @@ struct screen_consumer
+                                u8(print()),
+                                window_style,
+                                sf::ContextSettings(0, 0, 0, 4, 5, sf::ContextSettings::Attribute::Core));
++#endif
+                 window_.setPosition(sf::Vector2i(screen_x_, screen_y_));
+                 window_.setMouseCursorVisible(config_.interactive);
+-                window_.setActive(true);
++                std::ignore = window_.setActive(true);
+ 
+                 if (config_.always_on_top) {
+ #ifdef _MSC_VER
+@@ -356,6 +375,16 @@ struct screen_consumer
+     bool poll()
+     {
+         int       count = 0;
++#if SFML_VERSION_MAJOR >= 3
++        while (const auto e = window_.pollEvent()) {
++            count++;
++            if (e->is<sf::Event::Resized>()) {
++                calculate_aspect();
++            } else if (e->is<sf::Event::Closed>()) {
++                is_running_ = false;
++            }
++        }
++#else
+         sf::Event e;
+         while (window_.pollEvent(e)) {
+             count++;
+@@ -365,6 +394,7 @@ struct screen_consumer
+                 is_running_ = false;
+             }
+         }
++#endif
+         return count > 0;
+     }
+ 
+diff --git a/src/modules/screen/util/x11_util.cpp b/src/modules/screen/util/x11_util.cpp
+index 7d0a3a0895..b1fbc6033a 100644
+--- a/src/modules/screen/util/x11_util.cpp
++++ b/src/modules/screen/util/x11_util.cpp
+@@ -30,7 +30,11 @@ bool window_always_on_top(const sf::Window& window)
+     if (!disp)
+         return false;
+ 
++#if SFML_VERSION_MAJOR >= 3
++    Window win = window.getNativeHandle();
++#else
+     Window win = window.getSystemHandle();
++#endif
+ 
+     Atom   wm_state, wm_state_above;
+     XEvent event;

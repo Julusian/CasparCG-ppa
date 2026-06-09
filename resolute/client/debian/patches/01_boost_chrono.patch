@@ -1,0 +1,22 @@
+From ab3b625359ca5e1ab9074ce3b4897c10d3d1e897 Mon Sep 17 00:00:00 2001
+From: Julian Waller <git@julusian.co.uk>
+Date: Tue, 9 Jun 2026 14:19:22 +0100
+Subject: [PATCH] chore: fix ci builds
+
+---
+ src/CMakeModules/Bootstrap_Linux.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: client/src/CMakeModules/Bootstrap_Linux.cmake
+===================================================================
+--- client.orig/src/CMakeModules/Bootstrap_Linux.cmake
++++ client/src/CMakeModules/Bootstrap_Linux.cmake
+@@ -4,7 +4,7 @@ function (add_external_dependencies PROJ
+ endfunction()
+ 
+ set (Boost_NO_WARN_NEW_VERSIONS 1)
+-FIND_PACKAGE (Boost REQUIRED COMPONENTS thread REQUIRED)
++FIND_PACKAGE (Boost REQUIRED COMPONENTS thread chrono REQUIRED)
+ 
+ find_package(LibVLC REQUIRED)
+ 
