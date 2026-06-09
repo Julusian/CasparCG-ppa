@@ -1,3 +1,10 @@
+casparcg-client (2.3.1~stable+3-noble1) noble; urgency=medium
+
+  * Rebuild after incorrect upload
+
+ -- Julian Waller <me@julusian.co.uk>  Tue, 09 Jun 2026 16:22:00 +0000
+ 
+
 casparcg-client (2.3.1~stable+2-noble1) noble; urgency=medium
 
   * Update to 2.3.1
