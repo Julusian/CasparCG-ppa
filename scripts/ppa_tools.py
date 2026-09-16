@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -38,7 +39,9 @@ SERIES_IMAGE = {
     "resolute": "ubuntu:26.04",
 }
 
-NULL_SHA = "0000000000000000000000000000000000000000"
+PPA_FILES_URL = "https://launchpad.net/~casparcg/+archive/ubuntu/ppa/+files"
+
+NULL_SHA ="0000000000000000000000000000000000000000"
 
 
 # ---------------------------------------------------------------------------
@@ -136,11 +139,29 @@ def _tarball_ext(path: Path) -> str:
 
 def _download(url: str, dest_dir: Path) -> Path:
     print(f"  Downloading: {url}")
-    dest = dest_dir / "download"
+    dest = dest_dir / url.rsplit("/", 1)[-1]
     req = urllib.request.Request(url, headers={"User-Agent": "casparcg-ppa-tools"})
     with urllib.request.urlopen(req) as resp, open(dest, "wb") as out:
         shutil.copyfileobj(resp, out)
     return dest
+
+
+def _download_from_ppa(stem: str, dest_dir: Path) -> Path | None:
+    """Download an orig tarball already in the PPA, or return None if there isn't one.
+
+    Launchpad rejects an orig tarball that differs from the one it already has for a
+    version, so this must be preferred over fetching from upstream.
+    """
+    for ext in ("gz", "xz", "bz2"):
+        url = f"{PPA_FILES_URL}/{stem}.tar.{ext}"
+        try:
+            urllib.request.urlopen(urllib.request.Request(url, method="HEAD"))
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                continue
+            raise
+        return _download(url, dest_dir)
+    return None
 
 
 def _uscan_download(pkg_dir: Path, src_name: str, dest_dir: Path) -> Path:
@@ -149,7 +170,12 @@ def _uscan_download(pkg_dir: Path, src_name: str, dest_dir: Path) -> Path:
     uscan names the tarball after its mangled upstream version, which can differ
     from the changelog (e.g. +N rebuild suffixes), so the caller renames it.
     """
-    cmd = ["uscan", "--download-current-version", "--copy", "--destdir", str(dest_dir)]
+    # Use the upstream tarball unchanged. Any repack is not reproducible, so builds for
+    # each distro would produce different orig tarballs, which Launchpad rejects
+    cmd = [
+        "uscan", "--download-current-version", "--copy", "--no-exclusion",
+        "--destdir", str(dest_dir),
+    ]
     # Unauthenticated GitHub API requests are rate limited per IP, which CI runners share
     # (jammy's uscan is too old to support --http-header)
     token = os.environ.get("GITHUB_TOKEN")
@@ -174,12 +200,14 @@ def _fetch_orig(
         return existing[0]
 
     src_type = spec.get("type", "uscan")
-    if src_type == "uscan" and not (pkg_dir / "debian" / "watch").exists():
-        raise RuntimeError(f"No debian/watch or debian/source.json for {pkg_dir.name}")
-
     with tempfile.TemporaryDirectory() as tmp:
         tmp_dir = Path(tmp)
-        if src_type == "uscan":
+        downloaded = _download_from_ppa(stem, tmp_dir)
+        if downloaded:
+            print("  Using the orig tarball already in the PPA")
+        elif src_type == "uscan":
+            if not (pkg_dir / "debian" / "watch").exists():
+                raise RuntimeError(f"No debian/watch or debian/source.json for {pkg_dir.name}")
             print(f"  Fetching via uscan (version {up_ver})…")
             downloaded = _uscan_download(pkg_dir, src_name, tmp_dir)
         elif src_type == "direct_url":

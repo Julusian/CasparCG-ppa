@@ -54,8 +54,9 @@ Publishing is a manual step, done locally:
    * `python3 scripts/ppa_tools.py setup-local <distro> <package>`
    * Run in the package folder: `debuild -S -uc -us`
    * Optionally, test build binaries: `debuild -b -uc -us`
-3. Sign it: `debsign <distro>/casparcg-server_XXXXXXXX_source.changes`
-4. Upload it: `dput ppa:casparcg/ppa <distro>/casparcg-server_XXXXXXXX_source.changes`
+3. Sign and upload it: run `scripts/upload.sh` inside the extracted artifact (or the distro folder, if it only contains one build). This uses `dput` if installed, otherwise uploads with `curl`.
+
+   Or manually: `debsign <file>_source.changes` then `dput ppa:casparcg/ppa <file>_source.changes`
 
 The orig tarball is only included in the upload when the upstream version changes. Launchpad rejects an orig tarball that differs from one it already has for the same version, so for a new upload of the same upstream version, only bump the debian revision (eg `noble1` to `noble2`).
 
