@@ -47,6 +47,8 @@ jobs:
 
       - name: Fetch source and install build dependencies
         run: python3 scripts/ppa_tools.py setup-local "$DISTRO" "$PACKAGE"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Source build
         working-directory: ${{ inputs.distro }}/${{ inputs.package }}
