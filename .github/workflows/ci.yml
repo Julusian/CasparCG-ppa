@@ -24,7 +24,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       has-packages: ${{ steps.set-matrix.outputs.has-packages }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # full history, so the diff base of a multi-commit push is available
           fetch-depth: 0

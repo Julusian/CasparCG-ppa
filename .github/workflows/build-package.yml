@@ -43,7 +43,7 @@ jobs:
       - name: Enable CasparCG PPA
         run: add-apt-repository -y ppa:casparcg/ppa
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Fetch source and install build dependencies
         run: python3 scripts/ppa_tools.py setup-local "$DISTRO" "$PACKAGE"
@@ -72,7 +72,7 @@ jobs:
           ls -lh /tmp/source-artifacts/
 
       - name: Upload source artefacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: source-${{ inputs.distro }}-${{ inputs.package }}
           path: /tmp/source-artifacts/
