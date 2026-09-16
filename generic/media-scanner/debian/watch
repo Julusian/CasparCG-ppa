@@ -4,5 +4,5 @@ searchmode=plain,\
 dversionmangle=s/\+\d+$//;s/\+(debian|dfsg|ds|deb)(\.\d+)?$//,\
 uversionmangle=s/(\d)[_\.\-\+]?((RC|rc|pre|dev|beta|alpha)\d*)$/$1~$2/,\
 filenamemangle=s%.*/v?@ANY_VERSION@%@PACKAGE@-$1.tar.gz% \
-https://api.github.com/repos/CasparCG/media-scanner/releases?per_page=50 \
-https://api.github.com/repos/[^/]+/[^/]+/tarball/v?@ANY_VERSION@
+https://api.github.com/repos/CasparCG/media-scanner/tags?per_page=50 \
+https://api.github.com/repos/[^/]+/[^/]+/tarball/refs/tags/v?@ANY_VERSION@
