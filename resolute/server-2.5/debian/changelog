@@ -1,6 +1,6 @@
-casparcg-server-2.5 (2.5.1-stable-resolute1) resolute; urgency=medium
+casparcg-server-2.5 (2.5.1~stable-resolute1) resolute; urgency=medium
 
-  * Update to 2.5.1-stable
+  * Update to 2.5.1~stable
 
  -- Julian Waller <me@julusian.co.uk>  Wed, 16 Sep 2026 15:36:19 +0100
 

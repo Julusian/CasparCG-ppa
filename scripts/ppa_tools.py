@@ -149,10 +149,13 @@ def _uscan_download(pkg_dir: Path, src_name: str, dest_dir: Path) -> Path:
     uscan names the tarball after its mangled upstream version, which can differ
     from the changelog (e.g. +N rebuild suffixes), so the caller renames it.
     """
-    result = subprocess.run(
-        ["uscan", "--download-current-version", "--copy", "--destdir", str(dest_dir)],
-        cwd=pkg_dir, capture_output=True, text=True,
-    )
+    cmd = ["uscan", "--download-current-version", "--copy", "--destdir", str(dest_dir)]
+    # Unauthenticated GitHub API requests are rate limited per IP, which CI runners share
+    # (jammy's uscan is too old to support --http-header)
+    token = os.environ.get("GITHUB_TOKEN")
+    if token and "--http-header" in subprocess.run(["uscan", "--help"], capture_output=True, text=True).stdout:
+        cmd += ["--http-header", f"https://api.github.com@Authorization=Bearer {token}"]
+    result = subprocess.run(cmd, cwd=pkg_dir, capture_output=True, text=True)
     candidates = sorted(dest_dir.glob(f"{glob.escape(src_name)}_*.orig.tar.*"))
     if not candidates:
         print((result.stdout + result.stderr).strip(), file=sys.stderr)
@@ -307,6 +310,12 @@ def cmd_bump(args: argparse.Namespace) -> None:
     logical = args.package
     new_upstream = args.version
     root = repo_root()
+
+    if "-" in new_upstream:
+        sys.exit(
+            f"Upstream version can't contain '-', as it separates the debian revision. "
+            f"Use '~' for pre-release style suffixes, e.g. {new_upstream.replace('-', '~')}"
+        )
 
     targets = [(d, root / d / p) for d, p in all_packages(root) if p == logical]
     if not targets:
