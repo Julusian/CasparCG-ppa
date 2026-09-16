@@ -1,0 +1,15 @@
+{
+  "type": "uscan",
+  "components": {
+    "amd64": {
+      "type": "github_asset",
+      "repo": "CasparCG/media-scanner",
+      "asset": "casparcg-scanner-v{version}-linux-x64.tar.gz"
+    },
+    "arm64": {
+      "type": "github_asset",
+      "repo": "CasparCG/media-scanner",
+      "asset": "casparcg-scanner-v{version}-linux-arm64.tar.gz"
+    }
+  }
+}

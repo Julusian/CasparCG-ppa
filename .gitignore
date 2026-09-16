@@ -1,22 +1,22 @@
 /.vscode
-/*/obj-*
-/*.build
-/*.buildinfo
-/*.changes
-/*.deb
-/*.ddeb
-/*.dsc
-/*.tar.*
-/*.upload
+__pycache__/
 
-cef-*/*
-!cef-*/debian
+# build outputs, written into each distro folder
+/*/*.build
+/*/*.buildinfo
+/*/*.changes
+/*/*.deb
+/*/*.ddeb
+/*/*.dsc
+/*/*.tar.*
+/*/*.upload
 
-server-*/*
-!server-*/debian
-
-client/*
-!client/debian
-
-media-scanner/*
-!media-scanner/debian
+# unpacked upstream sources, only debian/ is tracked
+/generic/*/*
+!/generic/*/debian
+/jammy/*/*
+!/jammy/*/debian
+/noble/*/*
+!/noble/*/debian
+/resolute/*/*
+!/resolute/*/debian

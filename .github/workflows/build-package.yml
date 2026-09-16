@@ -1,0 +1,80 @@
+name: Build Package
+
+on:
+  workflow_call:
+    inputs:
+      distro:
+        required: true
+        type: string
+        description: "Folder the package is in (generic, jammy, noble, resolute)"
+      package:
+        required: true
+        type: string
+        description: "Package directory name (e.g. client, server-2.5)"
+      image:
+        required: true
+        type: string
+        description: "Container image to build in (e.g. ubuntu:24.04)"
+
+jobs:
+  build:
+    name: "${{ inputs.distro }}/${{ inputs.package }}"
+    runs-on: ubuntu-latest
+
+    container:
+      image: ${{ inputs.image }}
+
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      DISTRO: ${{ inputs.distro }}
+      PACKAGE: ${{ inputs.package }}
+
+    steps:
+      - name: Install base tools
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends \
+            devscripts build-essential equivs git \
+            python3 ca-certificates xz-utils \
+            quilt dpkg-dev debhelper lintian \
+            software-properties-common gpg-agent
+
+      # Some packages build-depend on others from the PPA (eg casparcg-cef-*-dev)
+      - name: Enable CasparCG PPA
+        run: add-apt-repository -y ppa:casparcg/ppa
+
+      - uses: actions/checkout@v4
+
+      - name: Fetch source and install build dependencies
+        run: python3 scripts/ppa_tools.py setup-local "$DISTRO" "$PACKAGE"
+
+      - name: Source build
+        working-directory: ${{ inputs.distro }}/${{ inputs.package }}
+        run: debuild -S -uc -us
+
+      - name: Binary build (verify packaging)
+        working-directory: ${{ inputs.distro }}/${{ inputs.package }}
+        run: debuild -b -uc -us
+
+      - name: Collect source artefacts
+        run: |
+          mkdir -p /tmp/source-artifacts
+          find "$DISTRO" -maxdepth 1 \
+            \( -name "*.dsc" \
+               -o -name "*_source.changes" \
+               -o -name "*_source.buildinfo" \
+               -o -name "*.orig.tar.*" \
+               -o -name "*.orig-*.tar.*" \
+               -o -name "*.debian.tar.*" \
+            \) \
+            -exec cp {} /tmp/source-artifacts/ \;
+          echo "Collected artefacts:"
+          ls -lh /tmp/source-artifacts/
+
+      - name: Upload source artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-${{ inputs.distro }}-${{ inputs.package }}
+          path: /tmp/source-artifacts/
+          if-no-files-found: error
+          retention-days: 30

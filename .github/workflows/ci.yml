@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "generic/**"
+      - "jammy/**"
+      - "noble/**"
+      - "resolute/**"
+  workflow_dispatch:
+    inputs:
+      distro:
+        description: "Folder to build (leave blank to auto-detect from the last commit)"
+        required: false
+      package:
+        description: "Package to build (leave blank to auto-detect from the last commit)"
+        required: false
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has-packages: ${{ steps.set-matrix.outputs.has-packages }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # full history, so the diff base of a multi-commit push is available
+          fetch-depth: 0
+
+      - name: Detect changed packages
+        id: set-matrix
+        env:
+          INPUT_DISTRO: ${{ inputs.distro }}
+          INPUT_PACKAGE: ${{ inputs.package }}
+          BEFORE: ${{ github.event.before }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [[ -n "$INPUT_DISTRO" && -n "$INPUT_PACKAGE" ]]; then
+            MATRIX=$(python3 scripts/ppa_tools.py detect-changes --only "$INPUT_DISTRO" "$INPUT_PACKAGE")
+          else
+            MATRIX=$(python3 scripts/ppa_tools.py detect-changes --base-ref "${BEFORE:-HEAD~1}" --default-branch "$DEFAULT_BRANCH")
+          fi
+
+          echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+
+          INCLUDE_COUNT=$(echo "${MATRIX}" | jq '.include | length')
+          echo "Detected ${INCLUDE_COUNT} changed package(s)"
+
+          if [[ "${INCLUDE_COUNT}" -gt 0 ]]; then
+            echo "has-packages=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-packages=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-packages == 'true'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.detect-changes.outputs.matrix) }}
+    uses: ./.github/workflows/build-package.yml
+    with:
+      distro: ${{ matrix.distro }}
+      package: ${{ matrix.package }}
+      image: ${{ matrix.image }}

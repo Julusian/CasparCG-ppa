@@ -1,0 +1,5 @@
+{
+  "_note": "Update 'url' from https://cef-builds.spotifycdn.com/ when bumping.",
+  "type": "direct_url",
+  "url": "https://cef-builds.spotifycdn.com/cef_binary_117.2.5%2Bgda4c36a%2Bchromium-117.0.5938.152_linux64_minimal.tar.bz2"
+}
