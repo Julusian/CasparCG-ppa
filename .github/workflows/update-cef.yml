@@ -1,0 +1,72 @@
+name: Update CEF
+
+# Checks daily for a newer stable build of the CEF major the cef package is at,
+# and opens a pull request updating it. Publishing is still a manual step.
+on:
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.push.outputs.branch }}
+      matrix: ${{ steps.push.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install devscripts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends devscripts
+
+      - name: Check for a CEF update
+        id: update
+        run: python3 scripts/ppa_tools.py update-cef cef
+
+      - name: Push a branch and open a pull request
+        id: push
+        if: steps.update.outputs.version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.update.outputs.version }}
+          CEF_VERSION: ${{ steps.update.outputs.cef_version }}
+        run: |
+          # '~' isn't allowed in branch names
+          BRANCH="update/cef-${VERSION%%~*}"
+          if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null; then
+            echo "$BRANCH already exists, skipping"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit -am "cef: update to $CEF_VERSION"
+          git push origin "$BRANCH"
+
+          gh pr create --head "$BRANCH" --title "cef: update to $VERSION" --body "Updates the \`cef\` package to CEF $CEF_VERSION, in every series folder.
+
+          The build below checks the wrapper still builds for every API version in \`debian/control\`. Test the HTML producer, then publish as usual."
+
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(python3 scripts/ppa_tools.py detect-changes --base-ref HEAD~1)" >> "$GITHUB_OUTPUT"
+
+  # Pushes made with the GITHUB_TOKEN don't trigger the CI workflow, so build the branch here
+  build:
+    needs: update
+    if: needs.update.outputs.branch
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.update.outputs.matrix) }}
+    uses: ./.github/workflows/build-package.yml
+    with:
+      distro: ${{ matrix.distro }}
+      package: ${{ matrix.package }}
+      image: ${{ matrix.image }}
+      ref: ${{ needs.update.outputs.branch }}

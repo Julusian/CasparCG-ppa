@@ -1,0 +1,11 @@
+{
+  "_note": "Updated by 'ppa_tools.py update-cef'. Every API version in debian/control must be supported by the new build (see include/cef_api_versions.h).",
+  "type": "direct_url",
+  "url": "https://cef-builds.spotifycdn.com/cef_binary_150.0.22%2Bgc1a097e%2Bchromium-150.0.7871.256_linux64_minimal.tar.bz2",
+  "components": {
+    "arm64": {
+      "type": "direct_url",
+      "url": "https://cef-builds.spotifycdn.com/cef_binary_150.0.22%2Bgc1a097e%2Bchromium-150.0.7871.256_linuxarm64_minimal.tar.bz2"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# casparcg-cef-api@CEF_API_VERSION@: CEF built for stable API version @CEF_API_VERSION@
+#
+# Usage:
+#   find_package(casparcg-cef-api@CEF_API_VERSION@ CONFIG REQUIRED)
+#   target_link_libraries(<target> PRIVATE CasparCG::CEF)
+#
+# CEF_API_VERSION is defined by the target, matching the version
+# libcef_dll_wrapper was built with. Don't define it yourself.
+
+if(TARGET CasparCG::CEF)
+  return()
+endif()
+
+add_library(CasparCG::CEF INTERFACE IMPORTED)
+set_target_properties(CasparCG::CEF PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "@CEF_INCLUDE_DIR@"
+  INTERFACE_COMPILE_DEFINITIONS "CEF_API_VERSION=@CEF_API_VERSION@"
+  INTERFACE_LINK_LIBRARIES "@CEF_WRAPPER@;@CEF_LIB_DIR@/libcef.so"
+  INTERFACE_LINK_OPTIONS "LINKER:-rpath,@CEF_LIB_DIR@"
+)

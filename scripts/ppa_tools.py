@@ -6,6 +6,7 @@ Commands:
   bump            Bump a package to a new upstream version across all distros
   fetch-source    Fetch the upstream orig tarball(s) for a package
   setup-local     Fetch + unpack the source and install build deps, ready for debuild
+  update-cef      Bump a CEF package to the newest stable build of its CEF major
 """
 
 import argparse
@@ -18,6 +19,7 @@ import subprocess
 import sys
 import tempfile
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -40,6 +42,12 @@ SERIES_IMAGE = {
 }
 
 PPA_FILES_URL = "https://launchpad.net/~casparcg/+archive/ubuntu/ppa/+files"
+
+CEF_BUILDS_URL = "https://cef-builds.spotifycdn.com"
+
+# The CEF platforms each package is built from: the main orig tarball, and the
+# source.json component for each other one
+CEF_PLATFORMS = {None: "linux64", "arm64": "linuxarm64"}
 
 NULL_SHA ="0000000000000000000000000000000000000000"
 
@@ -458,6 +466,102 @@ def cmd_setup_local(args: argparse.Namespace) -> None:
 
 
 # ---------------------------------------------------------------------------
+# update-cef
+# ---------------------------------------------------------------------------
+
+def _cef_version_key(version: str) -> tuple[int, ...]:
+    """Numeric sort key of a CEF version, e.g. 150.0.22+gc1a097e or 150.0.22~gc1a097e.
+
+    Old builds use a different format (3.3239.1723.g9f41a27), so stop at the first non-number.
+    """
+    m = re.match(r"\d+(\.\d+)*", version)
+    return tuple(int(x) for x in m.group(0).split(".")) if m else ()
+
+
+def _newest_cef_build(index: dict, major: int) -> tuple[str, dict[str | None, str]] | None:
+    """Find the newest stable CEF build of a major with a minimal tarball for every platform.
+
+    Returns (cef_version, {component: tarball name}), e.g.
+    ("150.0.22+gc1a097e+chromium-150.0.7871.256", {None: "cef_binary_..._linux64_minimal.tar.bz2", ...})
+    """
+    per_platform = []
+    for platform in CEF_PLATFORMS.values():
+        builds = {}
+        for v in index[platform]["versions"]:
+            if v["channel"] != "stable" or _cef_version_key(v["cef_version"])[:1] != (major,):
+                continue
+            minimal = [f["name"] for f in v["files"] if f["type"] == "minimal"]
+            if minimal:
+                builds[v["cef_version"]] = minimal[0]
+        per_platform.append(builds)
+
+    # arm64 builds are published a few hours after linux64, so only consider versions with both
+    common = set.intersection(*(set(b) for b in per_platform))
+    if not common:
+        return None
+    newest = max(common, key=_cef_version_key)
+    return newest, {comp: builds[newest] for comp, builds in zip(CEF_PLATFORMS, per_platform)}
+
+
+def cmd_update_cef(args: argparse.Namespace) -> None:
+    root = repo_root()
+    targets = [root / d / p for d, p in all_packages(root) if p == args.package]
+    if not targets:
+        sys.exit(f"No packages found for '{args.package}'")
+
+    versions = {upstream_version(parse_changelog(pkg_dir)[1]) for pkg_dir in targets}
+    if len(versions) != 1:
+        sys.exit(f"'{args.package}' is at different versions in each series: {', '.join(sorted(versions))}")
+    current = versions.pop()
+    major = _cef_version_key(current)[0]
+
+    req = urllib.request.Request(f"{CEF_BUILDS_URL}/index.json", headers={"User-Agent": "casparcg-ppa-tools"})
+    with urllib.request.urlopen(req) as resp:
+        index = json.load(resp)
+
+    newest = _newest_cef_build(index, major)
+    if newest is None:
+        sys.exit(f"No stable CEF {major} builds found")
+    cef_version, files = newest
+
+    # Report newer majors, but don't move to them: that needs the API versions checking
+    newest_major = max(
+        (_cef_version_key(v["cef_version"])[0]
+         for v in index[CEF_PLATFORMS[None]]["versions"] if v["channel"] == "stable"),
+        default=major,
+    )
+    if newest_major > major:
+        print(f"Note: CEF {newest_major} is available, these packages track CEF {major}")
+
+    # 150.0.22+gc1a097e+chromium-150.0.7871.256 -> 150.0.22~gc1a097e
+    new_upstream = cef_version.split("+chromium")[0].replace("+", "~")
+    if _cef_version_key(new_upstream) <= _cef_version_key(current):
+        print(f"'{args.package}' is up to date at {current}")
+        return
+
+    print(f"Updating '{args.package}' from {current} to {new_upstream}\n")
+    if args.dry_run:
+        return
+
+    for pkg_dir in targets:
+        spec_file = pkg_dir / "debian" / "source.json"
+        spec = json.loads(spec_file.read_text())
+        for component, name in files.items():
+            comp_spec = spec if component is None else spec["components"][component]
+            comp_spec["url"] = f"{CEF_BUILDS_URL}/{urllib.parse.quote(name)}"
+        spec_file.write_text(json.dumps(spec, indent=2) + "\n")
+
+    cmd_bump(argparse.Namespace(
+        package=args.package, version=new_upstream, message=f"Update to CEF {cef_version}",
+    ))
+
+    # Let the GitHub Actions workflow open a pull request
+    if "GITHUB_OUTPUT" in os.environ:
+        with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+            out.write(f"version={new_upstream}\ncef_version={cef_version}\n")
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -526,6 +630,21 @@ def main() -> None:
     )
     p.add_argument("--skip-deps", action="store_true", help="Skip dependency installation")
     p.set_defaults(func=cmd_setup_local)
+
+    # update-cef
+    p = subs.add_parser(
+        "update-cef",
+        help="Bump a CEF package to the newest stable build of its CEF major",
+        description=(
+            "Finds the newest stable build of the CEF major a package is currently at, from\n"
+            f"{CEF_BUILDS_URL}/index.json. If it is newer, updates debian/source.json and\n"
+            "the changelog in every series folder containing the package."
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p.add_argument("package", nargs="?", default="cef", help="Package folder name (default: cef)")
+    p.add_argument("--dry-run", action="store_true", help="Only report whether there is an update")
+    p.set_defaults(func=cmd_update_cef)
 
     args = parser.parse_args()
     args.func(args)

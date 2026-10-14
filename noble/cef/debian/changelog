@@ -1,0 +1,5 @@
+casparcg-cef (150.0.22~gc1a097e-noble1) noble; urgency=medium
+
+  * First upload, CEF built for stable API version 15000
+
+ -- Julian Waller <me@julusian.co.uk>  Wed, 14 Oct 2026 13:00:00 +0100

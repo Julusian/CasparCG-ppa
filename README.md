@@ -32,6 +32,7 @@ Packages in `generic` don't depend on the series (eg the media-scanner, which is
 * `python3 scripts/ppa_tools.py bump <package> <version>` adds a changelog entry for a new upstream version, in every series folder containing that package. It prompts for which patches to keep.
 * `python3 scripts/ppa_tools.py setup-local <distro> <package>` fetches the orig tarball(s) into the series folder, unpacks them into the package folder, and installs the build dependencies. Add `--skip-deps` to skip the dependency install, or `--orig <path>` to supply the upstream tarball yourself.
 * `python3 scripts/ppa_tools.py fetch-source <distro> <package>` only fetches the orig tarball(s).
+* `python3 scripts/ppa_tools.py update-cef [package]` bumps a CEF package (default `cef`) to the newest stable build of the CEF major it is at, updating `source.json` and the changelog in every series folder. `--dry-run` only reports whether there is an update.
 
 The upstream source is described by `debian/source.json`, or `debian/watch` (via `uscan`) if that is not present. `source.json` can use a `direct_url` (CEF), a `github_asset`, or `uscan`, and can list extra `components` tarballs (the media-scanner uses these for the amd64 and arm64 binaries). The orig tarballs are named to match the changelog version, so rebuild suffixes like `+2` work.
 
@@ -81,7 +82,27 @@ CEF is published as its own package, to minimise the size of each deb and the bu
 
 This package will most likely be the cause of the PPA running out of space, as each update consumes 5% of the available space.
 
-When publishing a new major version of CEF, the package name must be updated. This allows for installing multiple branches of `casparcg-server` simultaneously.
+There are two kinds of CEF package:
+
+- `cef-<major>` (eg `cef-142`): built for CEF's experimental API, so only works with the exact CEF build it was compiled against. A new CEF major needs a new package name. Kept as-is for the server branches already using them.
+- `cef` (source `casparcg-cef`): built for CEF stable API versions (https://chromiumembedded.github.io/cef/api_versioning). Anything built against stable API NNNNN runs on any CEF that still supports that version, so newer CEF releases go into the same package and users get Chromium updates without a new server build.
+
+`cef` builds one runtime package, `casparcg-cef`, and a `casparcg-cef-apiNNNNN-dev` package for each API version listed in `debian/control`. Each -dev package has the headers, a `libcef_dll_wrapper` built for exactly NNNNN, and a CMake config. The runtime `Provides: casparcg-cef-apiNNNNN` for each of them, and that is what servers depend on. The API versions are read from the -dev package names in `debian/control`, so that is the only place to change them.
+
+The rule: whenever `casparcg-cef` provides `casparcg-cef-apiNNNNN`, it must be able to run anything built against stable API NNNNN. The package version is the upstream CEF version.
+
+The "Update CEF" workflow runs `update-cef` daily. When there is a newer build of the same CEF major, it pushes an `update/cef-<version>` branch, opens a pull request and builds it. For it to open pull requests, "Allow GitHub Actions to create and approve pull requests" must be enabled in the repository's Actions settings. It never moves to a newer CEF major, as that needs the API versions checking first.
+
+Updating to a newer CEF (by hand, or reviewing the workflow's pull request):
+1. Check include/cef_api_versions.h in the new tarball: every NNNNN in `debian/control` must be between CEF_API_VERSION_MIN and CEF_API_VERSION_LAST. (Otherwise the wrapper build fails with "#error Building with unsupported CEF_API_VERSION value".)
+2. Update the URLs in debian/source.json and bump the changelog, in every series folder (`update-cef` does both).
+3. Test the HTML producer, then publish. No server rebuild needed. The API is guaranteed, the behaviour of a new Chromium is not.
+
+Adding an API version (eg a server wants API added after NNNNN): add another `casparcg-cef-apiMMMMM-dev` stanza to `debian/control`, copying the existing one, in every series folder. The existing ones are unaffected.
+
+When CEF drops NNNNN: first rebuild the maintained server branches against a newer `casparcg-cef-apiMMMMM-dev` and publish them. Then remove the `casparcg-cef-apiNNNNN-dev` stanza and publish the new CEF. Once it no longer provides `casparcg-cef-apiNNNNN`, apt won't upgrade `casparcg-cef` on machines with a server that still depends on it, so they keep the old CEF and keep working. But Launchpad only keeps the latest version, so new installs of that server will fail.
+
+Building against it: Build-Depends on `casparcg-cef-apiNNNNN-dev`, use `find_package(casparcg-cef-apiNNNNN CONFIG REQUIRED)` and link `CasparCG::CEF`. Don't set CEF_API_VERSION yourself. In the server's debian/control, Depends on casparcg-cef-apiNNNNN without a version pin.
 
 Running a source build of CEF takes a while to lint the build. The lint will fail with errors as the source is not provided for many of the files, but the needed `changes` will still be produced
 

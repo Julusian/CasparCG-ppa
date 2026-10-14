@@ -15,6 +15,11 @@ on:
         required: true
         type: string
         description: "Container image to build in (e.g. ubuntu:24.04)"
+      ref:
+        required: false
+        type: string
+        default: ""
+        description: "Git ref to build (default: the ref that triggered the workflow)"
 
 jobs:
   build:
@@ -44,6 +49,8 @@ jobs:
         run: add-apt-repository -y ppa:casparcg/ppa
 
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Fetch source and install build dependencies
         run: python3 scripts/ppa_tools.py setup-local "$DISTRO" "$PACKAGE"

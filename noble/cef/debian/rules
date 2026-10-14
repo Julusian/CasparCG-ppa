@@ -1,0 +1,83 @@
+#!/usr/bin/make -f
+include /usr/share/dpkg/architecture.mk
+
+# The CEF stable API versions to build libcef_dll_wrapper for, one per
+# casparcg-cef-api<NNNNN>-dev package in debian/control
+CEF_API_VERSIONS := $(shell sed -n 's/^Package: casparcg-cef-api\([0-9]\{5\}\)-dev$$/\1/p' debian/control)
+ifeq ($(strip $(CEF_API_VERSIONS)),)
+  $(error No casparcg-cef-api<NNNNN>-dev packages found in debian/control)
+endif
+
+CEF_LIB_DIR = usr/lib/casparcg-cef
+CEF_INCLUDE_DIR = usr/include/casparcg-cef
+
+# The linux64 tarball is the main orig, unpacked at the top level. The
+# linuxarm64 tarball is the 'arm64' component, which is unpacked into arm64/.
+# PROJECT_ARCH is the name expected by CEF's cmake
+ifeq ($(DEB_HOST_ARCH),arm64)
+  CEF_DIR = arm64
+  CEF_PROJECT_ARCH = arm64
+else
+  CEF_DIR = .
+  CEF_PROJECT_ARCH = x86_64
+endif
+
+BUILD_DIR = obj-$(DEB_HOST_GNU_TYPE)
+
+export DH_VERBOSE = 1
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	set -e; for v in $(CEF_API_VERSIONS); do \
+	  mkdir -p $(BUILD_DIR)/api$$v; \
+	  (cd $(BUILD_DIR)/api$$v && cmake \
+	    -DCMAKE_BUILD_TYPE=Release \
+	    -DPROJECT_ARCH=$(CEF_PROJECT_ARCH) \
+	    -DCEF_ROOT=$(CURDIR)/$(CEF_DIR) \
+	    -Dapi_version=$$v \
+	    $(CURDIR)/$(CEF_DIR)); \
+	done
+
+override_dh_auto_build:
+	set -e; for v in $(CEF_API_VERSIONS); do \
+	  $(MAKE) -C $(BUILD_DIR)/api$$v libcef_dll_wrapper; \
+	done
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+	rm -rf $(BUILD_DIR)
+
+# The CEF binaries are prebuilt, and dwz can't handle their debug info
+override_dh_dwz:
+
+override_dh_installdocs:
+	dh_installdocs $(CEF_DIR)/LICENSE.txt $(CEF_DIR)/README.txt
+
+override_dh_auto_install:
+	install -d debian/casparcg-cef/$(CEF_LIB_DIR)
+	cp -r $(CEF_DIR)/Release/. debian/casparcg-cef/$(CEF_LIB_DIR)/
+	cp -r $(CEF_DIR)/Resources/. debian/casparcg-cef/$(CEF_LIB_DIR)/
+	set -e; for v in $(CEF_API_VERSIONS); do \
+	  pkg=debian/casparcg-cef-api$$v-dev; \
+	  install -d $$pkg/$(CEF_INCLUDE_DIR)/api$$v/include; \
+	  cp -r $(CEF_DIR)/include/. $$pkg/$(CEF_INCLUDE_DIR)/api$$v/include/; \
+	  install -Dm644 $(BUILD_DIR)/api$$v/libcef_dll_wrapper/libcef_dll_wrapper.a \
+	    $$pkg/$(CEF_LIB_DIR)/api$$v/libcef_dll_wrapper.a; \
+	  install -d $$pkg/usr/lib/cmake/casparcg-cef-api$$v; \
+	  sed -e "s|@CEF_API_VERSION@|$$v|g" \
+	      -e "s|@CEF_LIB_DIR@|/$(CEF_LIB_DIR)|g" \
+	      -e "s|@CEF_INCLUDE_DIR@|/$(CEF_INCLUDE_DIR)/api$$v|g" \
+	      -e "s|@CEF_WRAPPER@|/$(CEF_LIB_DIR)/api$$v/libcef_dll_wrapper.a|g" \
+	      debian/config.cmake.in > $$pkg/usr/lib/cmake/casparcg-cef-api$$v/casparcg-cef-api$$v-config.cmake; \
+	done
+
+# The runtime provides casparcg-cef-api<NNNNN> for each API version, which is
+# what clients depend on
+comma := ,
+CEF_PROVIDES = $(subst $() ,$(comma) ,$(patsubst %,casparcg-cef-api%,$(CEF_API_VERSIONS)))
+
+override_dh_gencontrol:
+	dh_gencontrol -- '-Vcef:Provides=$(CEF_PROVIDES)'
