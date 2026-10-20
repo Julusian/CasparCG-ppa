@@ -1,0 +1,8 @@
+.debhelper
+debhelper-build-stamp
+/libomt/
+/libomt-dev/
+/.dotnet-home/
+*.log
+*.substvars
+/files

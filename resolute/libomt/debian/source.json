@@ -1,0 +1,15 @@
+{
+  "_note": "libomt and libvmx have no releases, so these are pinned to commits (initially those in https://github.com/CasparCG/server/pull/1790). The upstream version is the libomt version plus the date of the newest commit. libomtnet and libvmx are unpacked into the libomt source as components.",
+  "type": "direct_url",
+  "url": "https://github.com/openmediatransport/libomt/archive/bb4b67be8e5964f1017592b9fc5406495e704e5d.tar.gz",
+  "components": {
+    "libomtnet": {
+      "type": "direct_url",
+      "url": "https://github.com/openmediatransport/libomtnet/archive/029ef4e925c68973f3289eb0c7ecfd40a161166f.tar.gz"
+    },
+    "libvmx": {
+      "type": "direct_url",
+      "url": "https://github.com/openmediatransport/libvmx/archive/a1828cb438823ebb777dcad20f9f56b633ae8db4.tar.gz"
+    }
+  }
+}

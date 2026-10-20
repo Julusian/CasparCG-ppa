@@ -1,0 +1,2 @@
+obj-${DEB_HOST_GNU_TYPE}/libomt.so usr/lib/${DEB_HOST_MULTIARCH}
+obj-${DEB_HOST_GNU_TYPE}/libvmx.so usr/lib/${DEB_HOST_MULTIARCH}

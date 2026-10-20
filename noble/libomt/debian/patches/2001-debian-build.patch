@@ -1,0 +1,39 @@
+Description: Build libomt from the Debian source layout, with .NET 10
+ libomtnet is unpacked inside the libomt source (as an orig component), rather
+ than beside it. It is built for net10.0, as netstandard2.0 needs packages from
+ nuget.org, which the buildds can't reach. libomt is retargeted to net10.0,
+ which is what Ubuntu has a Native AOT compiler for.
+ .
+ The library is also given a soname, which upstream doesn't set.
+Author: Julian Waller <me@julusian.co.uk>
+Forwarded: not-needed
+
+--- a/libomt.csproj
++++ b/libomt.csproj
+@@ -1,7 +1,7 @@
+ ﻿<Project Sdk="Microsoft.NET.Sdk">
+ 
+   <PropertyGroup>
+-    <TargetFramework>net8.0</TargetFramework>
++    <TargetFramework>net10.0</TargetFramework>
+     <ImplicitUsings>enable</ImplicitUsings>
+     <Nullable>enable</Nullable>
+     <PublishAot>true</PublishAot>
+@@ -11,11 +11,16 @@
+ 
+   <ItemGroup>
+     <Reference Include="libomtnet">
+-      <HintPath>..\libomtnet\bin\Release\netstandard2.0\libomtnet.dll</HintPath>
++      <HintPath>libomtnet\bin\Release\$(TargetFramework)\libomtnet.dll</HintPath>
+     </Reference>
+   </ItemGroup>
+ 
+   <ItemGroup>
++    <Compile Remove="libomtnet\**;libvmx\**" />
++  </ItemGroup>
++
++  <ItemGroup>
++    <LinkerArg Include="-Wl,-soname,libomt.so" />
+     <LinkerArg Condition="$(RuntimeIdentifier.StartsWith('osx'))" Include="-mmacosx-version-min=10.15" />
+   </ItemGroup>
+ 

@@ -1,0 +1,41 @@
+Source: libomt
+Maintainer: Julian Waller <git@julusian.co.uk>
+Section: libs
+Priority: optional
+Standards-Version: 4.6.0.1
+Build-Depends: clang,
+               debhelper-compat (= 13),
+               dotnet-sdk-aot-10.0,
+               libbrotli-dev,
+               libssl-dev,
+               zlib1g-dev
+Homepage: https://github.com/openmediatransport/libomt
+Vcs-Git: https://github.com/Julusian/CasparCG-ppa.git
+Vcs-Browser: https://github.com/Julusian/CasparCG-ppa/
+
+Package: libomt
+Architecture: amd64 arm64
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+# libavahi-client3 and libicu are loaded at runtime, so aren't found by shlibs
+Depends: libavahi-client3,
+         libicu74,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Description: Open Media Transport library
+ Open Media Transport (OMT) sends and receives video, audio and metadata
+ over a local network.
+ .
+ libomt is the C API to libomtnet, compiled to a native library using
+ Native AOT. It includes libvmx, the VMX video codec used by OMT.
+
+Package: libomt-dev
+Section: libdevel
+Architecture: amd64 arm64
+Multi-Arch: same
+Depends: libomt (= ${binary:Version}), ${misc:Depends}
+Description: Open Media Transport library - development files
+ Open Media Transport (OMT) sends and receives video, audio and metadata
+ over a local network.
+ .
+ This package contains the libomt C header.

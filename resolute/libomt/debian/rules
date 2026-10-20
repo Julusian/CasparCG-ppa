@@ -1,0 +1,54 @@
+#!/usr/bin/make -f
+
+# clang doesn't understand gcc's lto flags
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all optimize=-lto
+include /usr/share/dpkg/default.mk
+
+# The Ubuntu .NET SDK only has the runtime packs for its own runtime identifier,
+# not the portable linux-<arch> ones. libvmx is built as its build/buildlinux*.sh do
+ifeq ($(DEB_HOST_ARCH),arm64)
+  DOTNET_RID = ubuntu.26.04-arm64
+  VMX_SOURCES = vmxcodec_arm.cpp vmxcodec.cpp
+  VMX_FLAGS =
+else
+  DOTNET_RID = ubuntu.26.04-x64
+  VMX_SOURCES = vmxcodec_x86.cpp vmxcodec_avx2.cpp vmxcodec.cpp
+  VMX_FLAGS = -mlzcnt -mavx2 -mbmi
+endif
+
+# dotnet needs a writable home directory, which the buildds don't have
+export HOME = $(CURDIR)/debian/.dotnet-home
+export DOTNET_CLI_TELEMETRY_OPTOUT = 1
+export DOTNET_NOLOGO = 1
+export DOTNET_SKIP_FIRST_TIME_EXPERIENCE = 1
+
+# debian/nuget.config removes nuget.org, as the buildds have no network access
+DOTNET_FLAGS = -c Release -p:RestoreConfigFile=$(CURDIR)/debian/nuget.config -p:NuGetAudit=false
+
+BUILD_DIR = obj-$(DEB_HOST_GNU_TYPE)
+
+export DH_VERBOSE = 1
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+
+override_dh_auto_build:
+	mkdir -p $(BUILD_DIR) $(HOME)
+	clang++ $(CPPFLAGS) $(CXXFLAGS) -O3 -std=c++17 -fdeclspec -fPIC $(VMX_FLAGS) -shared $(LDFLAGS) -Wl,-soname,libvmx.so \
+	  $(addprefix libvmx/src/,$(VMX_SOURCES)) -o $(BUILD_DIR)/libvmx.so
+# libomtnet targets netstandard2.0, which needs NETStandard.Library from nuget.org,
+# so it is built for net10.0 instead (libomt.csproj is patched to match)
+	dotnet build libomtnet/libomtnet.csproj $(DOTNET_FLAGS) -p:TargetFrameworks=net10.0
+	dotnet publish libomt.csproj $(DOTNET_FLAGS) -r $(DOTNET_RID) -o $(BUILD_DIR)
+
+override_dh_auto_test:
+
+override_dh_auto_install:
+
+# dwz can't handle clang's DWARF 5 (libvmx), and Native AOT strips libomt itself
+override_dh_dwz:
+
+override_dh_auto_clean:
+	rm -rf $(BUILD_DIR) bin obj libomtnet/bin libomtnet/obj debian/.dotnet-home

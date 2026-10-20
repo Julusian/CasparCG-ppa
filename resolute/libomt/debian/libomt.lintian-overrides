@@ -1,0 +1,6 @@
+# CasparCG and other consumers dlopen libomt.so, and libomt loads libvmx.so,
+# so they are unversioned like upstream
+libomt: shared-library-lacks-version usr/lib/*/libomt.so libomt.so
+libomt: shared-library-lacks-version usr/lib/*/libvmx.so libvmx.so
+libomt: lacks-unversioned-link-to-shared-library example: usr/lib/*/libomt.so [usr/lib/*/libomt.so]
+libomt: lacks-unversioned-link-to-shared-library example: usr/lib/*/libvmx.so [usr/lib/*/libvmx.so]

@@ -106,6 +106,14 @@ Building against it: Build-Depends on `casparcg-cef-apiNNNNN-dev`, use `find_pac
 
 Running a source build of CEF takes a while to lint the build. The lint will fail with errors as the source is not provided for many of the files, but the needed `changes` will still be produced
 
+### libomt
+
+`libomt` builds `libomt` (which includes libvmx) and `libomt-dev` from [libomt](https://github.com/openmediatransport/libomt), with [libomtnet](https://github.com/openmediatransport/libomtnet) and [libvmx](https://github.com/openmediatransport/libvmx) as orig components. Only noble and resolute, as it needs Ubuntu's `dotnet-sdk-aot-10.0` (noble-updates and newer).
+
+libomt and libvmx have no releases, so `debian/source.json` pins a commit of each. To update: change the commits in `source.json` and bump to `<libomt version>+git<date of newest commit>`, in both series folders.
+
+The buildds have no network access, so `debian/nuget.config` removes nuget.org. If a new upstream version needs a package that isn't part of the Ubuntu .NET SDK, the build fails at restore.
+
 ### Server
 
 This is based on the packaging from [debian](https://salsa.debian.org/multimedia-team/casparcg-server)
