@@ -9,6 +9,11 @@
 set -euo pipefail
 
 PPA="${1:-casparcg/ppa}"
+if [[ ! "$PPA" =~ ^[a-z0-9][a-z0-9.+-]*/[a-z0-9][a-z0-9.+-]*$ ]]; then
+	echo "Expected a PPA as <owner>/<name> (eg casparcg/ppa), got '$PPA'" >&2
+	echo "The upload is always taken from the current directory" >&2
+	exit 1
+fi
 PPA_OWNER="${PPA%%/*}"
 PPA_NAME="${PPA#*/}"
 FTP_URL="ftp://ppa.launchpad.net/~${PPA_OWNER}/ubuntu/${PPA_NAME}/"

@@ -32,6 +32,11 @@ export DH_VERBOSE = 1
 %:
 	dh $@
 
+# upstream has a build/ directory, which would otherwise satisfy these targets
+.PHONY: build build-arch build-indep
+build build-arch build-indep:
+	dh $@
+
 override_dh_auto_configure:
 
 override_dh_auto_build:

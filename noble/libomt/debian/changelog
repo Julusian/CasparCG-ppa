@@ -1,3 +1,11 @@
+libomt (1.0.0.19+git20260923-noble2) noble; urgency=medium
+
+  * Build in the build target rather than under fakeroot in binary, as
+    upstream's build/ directory made make skip it. The ILLink task host
+    fails to start under fakeroot
+
+ -- Julian Waller <me@julusian.co.uk>  Wed, 21 Oct 2026 09:21:19 +0100
+
 libomt (1.0.0.19+git20260923-noble1) noble; urgency=medium
 
   * First upload: libomt bb4b67b, libomtnet 029ef4e and libvmx a1828cb
