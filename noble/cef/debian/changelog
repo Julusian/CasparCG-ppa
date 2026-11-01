@@ -1,3 +1,9 @@
+casparcg-cef (150.0.23~g4ccc4ca-noble1) noble; urgency=medium
+
+  * Update to CEF 150.0.23+g4ccc4ca+chromium-150.0.7871.287
+
+ -- Julian Waller <me@julusian.co.uk>  Sun, 01 Nov 2026 11:44:39 +0000
+
 casparcg-cef (150.0.22~gc1a097e-noble1) noble; urgency=medium
 
   * First upload, CEF built for stable API version 15000
